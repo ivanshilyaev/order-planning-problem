@@ -16,7 +16,7 @@ public class WarehouseService {
         this.warehouseRepository = warehouseRepository;
     }
 
-    public void save(Warehouse warehouse) {
+    public void saveOrUpdate(Warehouse warehouse) {
         warehouseRepository.save(warehouse);
     }
 

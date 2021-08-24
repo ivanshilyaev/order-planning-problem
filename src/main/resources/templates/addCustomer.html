@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add a customer</title>
+</head>
+<body>
+<h1>Add a customer</h1>
+<form action="#" th:action="@{/addCustomer}" th:object="${customer}" method="post">
+    <label>Id (name):
+        <input type="text" placeholder="id" th:field="*{id}"/>
+    </label>
+    <br><br>
+    <label>Location (coordinates):
+        <input type="text" placeholder="x" th:field="*{x}"/>
+        <input type="text" placeholder="y" th:field="*{y}"/>
+    </label>
+    <br><br>
+    <label>
+        <input type="submit" value="Submit"/>
+    </label>
+    <br><br>
+    <a th:href="@{index}">Main page</a>
+</form>
+</body>

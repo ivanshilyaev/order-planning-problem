@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>All customers</title>
+</head>
+<body>
+<h1>All customers</h1>
+<table th:border="1">
+    <thead style="background: rgb(128,128,128)">
+    <tr>
+        <td>Id</td>
+        <td>x</td>
+        <td>y</td>
+    </tr>
+    </thead>
+    <tr th:each="customer: ${customers}">
+        <td th:text="${customer.id}"></td>
+        <td th:text="${customer.x}"></td>
+        <td th:text="${customer.y}"></td>
+    </tr>
+</table>
+<br><br>
+<a th:href="@{index}">Main page</a>
+</body>

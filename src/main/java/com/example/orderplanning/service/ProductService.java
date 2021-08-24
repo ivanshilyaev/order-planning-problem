@@ -16,7 +16,7 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public void save(Product product) {
+    public void saveOrUpdate(Product product) {
         productRepository.save(product);
     }
 
