@@ -10,6 +10,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderPK implements Serializable {
-    private String customer_id;
-    private String product_name;
+    private String customerId;
+    private String productName;
 }

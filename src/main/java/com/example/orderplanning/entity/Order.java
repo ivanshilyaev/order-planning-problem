@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @IdClass(OrderPK.class)
 public class Order {
     @Id
-    private String customer_id;
+    private String customerId;
     @Id
-    private String product_name;
+    private String productName;
 }

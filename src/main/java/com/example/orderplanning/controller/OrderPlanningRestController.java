@@ -4,10 +4,7 @@ import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.Order;
 import com.example.orderplanning.entity.Product;
 import com.example.orderplanning.entity.Warehouse;
-import com.example.orderplanning.service.CustomerService;
-import com.example.orderplanning.service.OrderService;
-import com.example.orderplanning.service.ProductService;
-import com.example.orderplanning.service.WarehouseService;
+import com.example.orderplanning.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,17 +18,20 @@ public class OrderPlanningRestController {
     private final CustomerService customerService;
     private final OrderService orderService;
     private final ProductService productService;
+    private final MainService mainService;
 
     @Autowired
     public OrderPlanningRestController(WarehouseService warehouseService,
                                        CustomerService customerService,
                                        OrderService orderService,
-                                       ProductService productService
+                                       ProductService productService,
+                                       MainService mainService
     ) {
         this.warehouseService = warehouseService;
         this.customerService = customerService;
         this.orderService = orderService;
         this.productService = productService;
+        this.mainService = mainService;
     }
 
     // customers' API
@@ -49,10 +49,12 @@ public class OrderPlanningRestController {
 
     // orders' API
 
+    // returns the nearest to the customer warehouse,
+    // containing the product
     @PostMapping("/api/createOrder")
-    public Order createOrder(@RequestBody Order order) {
+    public Warehouse createOrder(@RequestBody Order order) {
         orderService.saveOrUpdate(order);
-        return order;
+        return mainService.findNearestWarehouse(order);
     }
 
     // products' API

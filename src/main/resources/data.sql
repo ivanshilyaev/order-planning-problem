@@ -1,5 +1,5 @@
 INSERT INTO WAREHOUSES (id, x, y)
-VALUES ('Misnk', 50, 50),
+VALUES ('Minsk', 50, 50),
        ('Gomel', 100, 0),
        ('Mogilev', 90, 55),
        ('Vitebsk', 60, 100),

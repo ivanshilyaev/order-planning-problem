@@ -2,6 +2,7 @@ package com.example.orderplanning.service;
 
 import com.example.orderplanning.dao.WarehouseRepository;
 import com.example.orderplanning.entity.Warehouse;
+import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,10 @@ public class WarehouseService {
 
     public List<Warehouse> findAll() {
         return warehouseRepository.findAll();
+    }
+
+    public Warehouse findById(String id) {
+        return warehouseRepository.findById(id).orElseThrow(NoWarehouseWithSuchIdException::new);
     }
 
     public void deleteById(String id) {
