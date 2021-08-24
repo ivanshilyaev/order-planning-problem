@@ -1,6 +1,7 @@
 package com.example.orderplanning.controller;
 
 import com.example.orderplanning.entity.Customer;
+import com.example.orderplanning.entity.Product;
 import com.example.orderplanning.service.CustomerService;
 import com.example.orderplanning.service.OrderService;
 import com.example.orderplanning.service.ProductService;
@@ -11,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.stream.Collectors;
 
 @Controller
 public class OrderPlanningController {
@@ -68,4 +71,17 @@ public class OrderPlanningController {
     public String createOrder() {
         return "createOrder";
     }
+
+    // products' API
+
+    @GetMapping("/allProducts")
+    public String listALlProducts(Model model) {
+        model.addAttribute("products",
+                productService.findAll().stream().map(Product::getName).distinct().collect(Collectors.toList()));
+        return "allProducts";
+    }
+
+    // warehouses' API
+
+
 }
