@@ -5,6 +5,8 @@ import com.example.orderplanning.entity.Order;
 import com.example.orderplanning.entity.OrderResponse;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderPlanningService {
+    private final Logger logger = LoggerFactory.getLogger("Logger");
     private final WarehouseService warehouseService;
     private final CustomerService customerService;
     private final ProductService productService;
@@ -35,8 +38,9 @@ public class OrderPlanningService {
                 .map(p -> warehouseService.findById(p.getWarehouseId()))
                 .collect(Collectors.toList());
         if (warehouses.isEmpty()) {
-            throw new NoWarehouseWithSuchProductException("Can't find warehouses containing product "
-                    + order.getProductName());
+            String message = "Can't find warehouses containing product " + order.getProductName();
+            logger.error(message);
+            throw new NoWarehouseWithSuchProductException(message);
         }
         Customer customer = customerService.findById(order.getCustomerId());
         Warehouse closestWarehouse = warehouses.get(0);

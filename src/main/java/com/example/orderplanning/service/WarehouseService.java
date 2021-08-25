@@ -3,13 +3,17 @@ package com.example.orderplanning.service;
 import com.example.orderplanning.dao.WarehouseRepository;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WarehouseService {
+    private final Logger logger = LoggerFactory.getLogger("Logger");
     private final WarehouseRepository warehouseRepository;
 
     @Autowired
@@ -26,7 +30,13 @@ public class WarehouseService {
     }
 
     public Warehouse findById(String id) {
-        return warehouseRepository.findById(id).orElseThrow(NoWarehouseWithSuchIdException::new);
+        Optional<Warehouse> warehouseOptional = warehouseRepository.findById(id);
+        if (warehouseOptional.isPresent()) {
+            return warehouseOptional.get();
+        } else {
+            logger.error("No warehouse with id " + id);
+            throw new NoWarehouseWithSuchIdException();
+        }
     }
 
     public void deleteById(String id) {
