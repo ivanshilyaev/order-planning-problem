@@ -3,18 +3,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>All products</title>
+    <title>All warehouses</title>
 </head>
 <body>
-<h1>All products</h1>
+<h1>All warehouses</h1>
 <table th:border="1">
     <thead style="background: rgb(128,128,128)">
     <tr>
-        <td>Name</td>
+        <td>Id</td>
+        <td>x</td>
+        <td>y</td>
     </tr>
     </thead>
-    <tr th:each="product: ${products}">
-        <td th:text="${product}"></td>
+    <tr th:each="warehouse: ${warehouses}">
+        <td th:text="${warehouse.id}"></td>
+        <td th:text="${warehouse.x}"></td>
+        <td th:text="${warehouse.y}"></td>
     </tr>
 </table>
 <br><br>

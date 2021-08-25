@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Order response</title>
+</head>
+<body>
+<h1>Order response</h1>
+<div>
+    <p th:text="'The nearest warehouse containing the product: ' + ${orderResponse.warehouse.id}"></p>
+    <p th:text="'Location: (' + ${orderResponse.warehouse.x} + ', ' + ${orderResponse.warehouse.x} + ')'"></p>
+    <p th:text="'Distance: ' + ${orderResponse.distance}"></p>
+</div>
+<br><br>
+<a th:href="@{index}">Main page</a>
+</body>

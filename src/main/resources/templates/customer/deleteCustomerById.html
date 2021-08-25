@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Delete customer by id</title>
+</head>
+<body>
+<h1>Delete customer by id</h1>
+<form action="#" th:action="@{/deleteCustomerById}" method="post">
+    <label>Id (name):
+        <input type="text" placeholder="id" th:name="id"/>
+    </label>
+    <br><br>
+    <label>
+        <input type="submit" value="Submit"/>
+    </label>
+    <br><br>
+    <a th:href="@{index}">Main page</a>
+</form>
+</body>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>All orders</title>
+</head>
+<body>
+<h1>All orders</h1>
+<table th:border="1">
+    <thead style="background: rgb(128,128,128)">
+    <tr>
+        <td>Customer id</td>
+        <td>Product name</td>
+    </tr>
+    </thead>
+    <tr th:each="order: ${orders}">
+        <td th:text="${order.customerId}"></td>
+        <td th:text="${order.productName}"></td>
+    </tr>
+</table>
+<br><br>
+<a th:href="@{index}">Main page</a>
+</body>

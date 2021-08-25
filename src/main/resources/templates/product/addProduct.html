@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Add a product</title>
+</head>
+<body>
+<h1>Add a product</h1>
+<form action="#" th:action="@{/addProduct}" th:object="${product}" method="post">
+    <label>Warehouse id:
+        <input type="text" placeholder="warehouseId" th:field="*{warehouseId}"/>
+    </label>
+    <br><br>
+    <label>Name:
+        <input type="text" placeholder="name" th:field="*{name}"/>
+    </label>
+    <br><br>
+    <label>
+        <input type="submit" value="Submit"/>
+    </label>
+    <br><br>
+    <a th:href="@{index}">Main page</a>
+</form>
+</body>

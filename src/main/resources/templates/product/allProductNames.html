@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>All product names</title>
+</head>
+<body>
+<h1>All product names</h1>
+<table th:border="1">
+    <thead style="background: rgb(128,128,128)">
+    <tr>
+        <td>Name</td>
+    </tr>
+    </thead>
+    <tr th:each="productName: ${productNames}">
+        <td th:text="${productName}"></td>
+    </tr>
+</table>
+<br><br>
+<a th:href="@{index}">Main page</a>
+</body>
