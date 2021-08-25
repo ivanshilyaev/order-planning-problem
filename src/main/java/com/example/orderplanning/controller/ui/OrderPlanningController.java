@@ -1,4 +1,4 @@
-package com.example.orderplanning.controller;
+package com.example.orderplanning.controller.ui;
 
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.Product;

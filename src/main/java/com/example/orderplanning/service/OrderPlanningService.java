@@ -2,6 +2,7 @@ package com.example.orderplanning.service;
 
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.Order;
+import com.example.orderplanning.entity.OrderResponse;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,22 +12,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class MainService {
+public class OrderPlanningService {
     private final WarehouseService warehouseService;
     private final CustomerService customerService;
     private final ProductService productService;
 
     @Autowired
-    public MainService(WarehouseService warehouseService,
-                       CustomerService customerService,
-                       ProductService productService
+    public OrderPlanningService(WarehouseService warehouseService,
+                                CustomerService customerService,
+                                ProductService productService
     ) {
         this.warehouseService = warehouseService;
         this.customerService = customerService;
         this.productService = productService;
     }
 
-    public Warehouse findNearestWarehouse(Order order) {
+    public OrderResponse findNearestWarehouse(Order order) {
         List<Warehouse> warehouses = productService
                 .findAll()
                 .stream()
@@ -47,7 +48,7 @@ public class MainService {
                 closestWarehouse = warehouse;
             }
         }
-        return closestWarehouse;
+        return new OrderResponse(closestWarehouse, minDistance);
     }
 
     private double distance(int x1, int y1, int x2, int y2) {
