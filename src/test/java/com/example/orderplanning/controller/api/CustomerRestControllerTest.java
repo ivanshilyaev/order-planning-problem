@@ -10,12 +10,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.List;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CustomerRestController.class)
 public class CustomerRestControllerTest {
@@ -31,7 +33,20 @@ public class CustomerRestControllerTest {
     Customer customer2 = new Customer("Pavel", 30, 60);
 
     @Test
-    public void getAllCustomersSuccess() throws Exception {
+    public void addCustomerSuccess() throws Exception {
+        Mockito.doNothing().when(customerService).saveOrUpdate(customer1);
+
+        MockHttpServletRequestBuilder mockRequest =
+                MockMvcRequestBuilders.post("/api/addCustomer?id=Ivan&x=50&y=50");
+
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.id", is("Ivan")));
+    }
+
+    @Test
+    public void allCustomersSuccess() throws Exception {
         Mockito.when(customerService.findAll()).thenReturn(List.of(customer1, customer2));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -40,5 +55,14 @@ public class CustomerRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[1].id", is("Pavel")));
+    }
+
+    @Test
+    public void deleteCustomerByIdSuccess() throws Exception {
+        Mockito.when(customerService.findById(customer1.getId())).thenReturn(customer1);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/deleteCustomerById?id=Ivan"))
+                .andExpect(status().isOk());
     }
 }
