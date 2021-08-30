@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderPlanningService {
-    private final Logger logger = LoggerFactory.getLogger("Logger");
+    private static final Logger logger = LoggerFactory.getLogger(OrderPlanningService.class);
     private final WarehouseService warehouseService;
     private final CustomerService customerService;
     private final ProductService productService;

@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +18,10 @@ import javax.persistence.Table;
 @IdClass(OrderPK.class)
 public class Order {
     @Id
+    @NotBlank(message = "Customer id is mandatory")
     private String customerId;
+
     @Id
+    @NotBlank(message = "Product name is mandatory")
     private String productName;
 }

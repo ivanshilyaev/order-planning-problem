@@ -3,11 +3,9 @@ package com.example.orderplanning.controller.api;
 import com.example.orderplanning.entity.Product;
 import com.example.orderplanning.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,10 +19,7 @@ public class ProductRestController {
     }
 
     @PostMapping("/api/addProduct")
-    public Product addProduct(@RequestParam String warehouseId,
-                              @RequestParam String name
-    ) {
-        Product product = new Product(warehouseId, name);
+    public Product addProduct(@Valid @RequestBody Product product) {
         productService.saveOrUpdate(product);
         return product;
     }

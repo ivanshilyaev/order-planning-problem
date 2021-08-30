@@ -3,11 +3,9 @@ package com.example.orderplanning.controller.api;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -20,11 +18,7 @@ public class WarehouseRestController {
     }
 
     @PostMapping("/api/addWarehouse")
-    public Warehouse addWarehouse(@RequestParam String name,
-                                  @RequestParam int x,
-                                  @RequestParam int y
-    ) {
-        Warehouse warehouse = new Warehouse(name, x, y);
+    public Warehouse addWarehouse(@Valid @RequestBody Warehouse warehouse) {
         warehouseService.saveOrUpdate(warehouse);
         return warehouse;
     }

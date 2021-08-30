@@ -5,6 +5,7 @@ import com.example.orderplanning.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,10 +22,7 @@ public class OrderRestController {
     // returns the nearest to the customer warehouse,
     // containing the product, and distance to that warehouse
     @PostMapping("/api/createOrder")
-    public OrderResponse createOrder(@RequestParam String customerId,
-                                     @RequestParam String productName
-    ) {
-        Order order = new Order(customerId, productName);
+    public OrderResponse createOrder(@Valid @RequestBody Order order) {
         orderService.saveOrUpdate(order);
         return mainService.findNearestWarehouse(order);
     }

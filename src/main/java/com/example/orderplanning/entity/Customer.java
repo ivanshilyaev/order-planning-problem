@@ -8,6 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @AllArgsConstructor
@@ -16,9 +18,12 @@ import javax.persistence.Table;
 @Table(name = "customers")
 public class Customer {
     @Id
+    @NotBlank(message = "Id is mandatory")
     private String id;
+
     @Column(name = "x")
     private int x;
+
     @Column(name = "y")
     private int y;
 }
