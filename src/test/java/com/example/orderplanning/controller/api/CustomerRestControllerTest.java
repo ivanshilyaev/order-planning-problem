@@ -30,19 +30,34 @@ public class CustomerRestControllerTest {
     CustomerService customerService;
 
     Customer customer1 = new Customer("Ivan", 50, 50);
+    Customer invalidCustomer1 = new Customer("", 50, 50);
     Customer customer2 = new Customer("Pavel", 30, 60);
 
     @Test
     public void addCustomerSuccess() throws Exception {
         Mockito.doNothing().when(customerService).saveOrUpdate(customer1);
 
-        MockHttpServletRequestBuilder mockRequest =
-                MockMvcRequestBuilders.post("/api/addCustomer?id=Ivan&x=50&y=50");
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/addCustomer")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customer1));
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$.id", is("Ivan")));
+    }
+
+    @Test
+    public void addCustomerFailure() throws Exception {
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/addCustomer")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidCustomer1));
+
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.id", is("Id is mandatory")));
     }
 
     @Test
