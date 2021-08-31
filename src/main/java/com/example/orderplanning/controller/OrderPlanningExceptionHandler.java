@@ -1,5 +1,8 @@
 package com.example.orderplanning.controller;
 
+import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
+import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
+import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,9 +34,10 @@ public class OrderPlanningExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public String handleNoHandlerFoundException(NoHandlerFoundException exception) {
+    @ExceptionHandler({NoHandlerFoundException.class, NoCustomerWithSuchIdException.class,
+            NoWarehouseWithSuchIdException.class, NoWarehouseWithSuchProductException.class})
+    public String handleNoHandlerFoundException(Exception exception) {
         logger.error("404 detected", exception);
-        return "Specified path not found";
+        return exception.getMessage();
     }
 }

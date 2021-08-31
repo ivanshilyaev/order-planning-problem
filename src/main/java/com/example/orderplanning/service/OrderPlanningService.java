@@ -4,6 +4,7 @@ import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.Order;
 import com.example.orderplanning.entity.OrderResponse;
 import com.example.orderplanning.entity.Warehouse;
+import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,8 @@ public class OrderPlanningService {
             logger.error(message);
             throw new NoWarehouseWithSuchProductException(message);
         }
-        Customer customer = customerService.findById(order.getCustomerId());
+        Customer customer = customerService.findById(order.getCustomerId())
+                .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + order.getCustomerId()));
         Warehouse closestWarehouse = warehouses.get(0);
         double minDistance = Double.MAX_VALUE;
         for (Warehouse warehouse : warehouses) {

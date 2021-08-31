@@ -1,4 +1,4 @@
-package com.example.orderplanning.controller.api;
+package com.example.orderplanning.controller;
 
 import com.example.orderplanning.entity.Product;
 import com.example.orderplanning.service.ProductService;
@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-public class ProductRestController {
+public class ProductController {
     private final ProductService productService;
 
     @Autowired
-    public ProductRestController(ProductService productService) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
     }
 

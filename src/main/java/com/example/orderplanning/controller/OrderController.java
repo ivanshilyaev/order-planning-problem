@@ -1,4 +1,4 @@
-package com.example.orderplanning.controller.api;
+package com.example.orderplanning.controller;
 
 import com.example.orderplanning.entity.*;
 import com.example.orderplanning.service.*;
@@ -9,14 +9,14 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-public class OrderRestController {
+public class OrderController {
     private final OrderService orderService;
-    private final OrderPlanningService mainService;
+    private final OrderPlanningService orderPlanningService;
 
     @Autowired
-    public OrderRestController(OrderService orderService, OrderPlanningService mainService) {
+    public OrderController(OrderService orderService, OrderPlanningService orderPlanningService) {
         this.orderService = orderService;
-        this.mainService = mainService;
+        this.orderPlanningService = orderPlanningService;
     }
 
     // returns the nearest to the customer warehouse,
@@ -24,7 +24,7 @@ public class OrderRestController {
     @PostMapping("/api/createOrder")
     public OrderResponse createOrder(@Valid @RequestBody Order order) {
         orderService.saveOrUpdate(order);
-        return mainService.findNearestWarehouse(order);
+        return orderPlanningService.findNearestWarehouse(order);
     }
 
     @GetMapping("/api/allOrders")

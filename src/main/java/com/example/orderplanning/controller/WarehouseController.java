@@ -1,4 +1,4 @@
-package com.example.orderplanning.controller.api;
+package com.example.orderplanning.controller;
 
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.WarehouseService;
@@ -9,11 +9,11 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-public class WarehouseRestController {
+public class WarehouseController {
     private final WarehouseService warehouseService;
 
     @Autowired
-    public WarehouseRestController(WarehouseService warehouseService) {
+    public WarehouseController(WarehouseService warehouseService) {
         this.warehouseService = warehouseService;
     }
 
