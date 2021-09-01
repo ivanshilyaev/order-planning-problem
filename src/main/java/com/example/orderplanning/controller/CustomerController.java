@@ -32,6 +32,7 @@ public class CustomerController {
                 .stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(CollectionModel.of(customers,
                 linkTo(methodOn(CustomerController.class).all()).withSelfRel()));
     }
@@ -75,7 +76,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/customers/{id}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable String id) {
+    public ResponseEntity<?> delete(@PathVariable String id) {
         service.deleteById(id);
 
         return ResponseEntity.noContent().build();

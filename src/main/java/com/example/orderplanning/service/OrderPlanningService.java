@@ -5,6 +5,7 @@ import com.example.orderplanning.entity.Order;
 import com.example.orderplanning.entity.OrderResponse;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
+import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,9 @@ public class OrderPlanningService {
                 .findAll()
                 .stream()
                 .filter(p -> p.getName().equals(order.getProductName()))
-                .map(p -> warehouseService.findById(p.getWarehouseId()))
+                .map(p -> warehouseService.findById(p.getWarehouseId())
+                        .orElseThrow(() -> new NoWarehouseWithSuchIdException(
+                                "No warehouse with id " + p.getWarehouseId())))
                 .collect(Collectors.toList());
         if (warehouses.isEmpty()) {
             String message = "Can't find warehouses containing product " + order.getProductName();
