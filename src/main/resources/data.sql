@@ -9,26 +9,14 @@ VALUES ('Minsk', 50, 50),
 INSERT INTO PRODUCTS (WAREHOUSE_ID, NAME)
 VALUES ('Minsk', 'iPhone'),
        ('Minsk', 'MacBook'),
-       ('Minsk', 'AirPods Pro'),
-       ('Minsk', 'AirPods Max'),
 
-       ('Gomel', 'iPhone'),
        ('Gomel', 'iPad'),
        ('Gomel', 'iMac'),
-       ('Gomel', 'Apple Watch'),
 
        ('Mogilev', 'AirPods'),
-       ('Mogilev', 'AirPods Pro'),
-       ('Mogilev', 'AirPods Max'),
 
-       ('Vitebsk', 'iPad'),
-       ('Vitebsk', 'MacBook'),
-       ('Vitebsk', 'iMac'),
+       ('Vitebsk', 'AirPods Pro'),
 
-       ('Grodno', 'iPhone'),
-       ('Grodno', 'MacBook'),
-       ('Grodno', 'AirPods'),
+       ('Grodno', 'Apple Watch'),
 
-       ('Brest', 'iPad'),
-       ('Brest', 'iMac'),
-       ('Brest', 'Apple Watch');
+       ('Brest', 'AirPods Max');

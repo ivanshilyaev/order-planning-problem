@@ -1,9 +1,7 @@
 package com.example.orderplanning.controller;
 
 import com.example.orderplanning.assembler.OrderModelAssembler;
-import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.Order;
-import com.example.orderplanning.service.CustomerService;
 import com.example.orderplanning.service.OrderPlanningService;
 import com.example.orderplanning.service.OrderService;
 import org.springframework.hateoas.CollectionModel;
@@ -16,21 +14,19 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class OrderController {
     private final OrderService orderService;
-    private final CustomerService customerService;
     private final OrderPlanningService orderPlanningService;
     private final OrderModelAssembler assembler;
 
     public OrderController(OrderService orderService,
-                           CustomerService customerService,
                            OrderPlanningService orderPlanningService,
                            OrderModelAssembler assembler) {
         this.orderService = orderService;
-        this.customerService = customerService;
         this.orderPlanningService = orderPlanningService;
         this.assembler = assembler;
     }
