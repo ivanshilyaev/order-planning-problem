@@ -2,7 +2,6 @@ package com.example.orderplanning.service;
 
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.Order;
-import com.example.orderplanning.entity.OrderResponse;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
@@ -32,7 +31,7 @@ public class OrderPlanningService {
         this.productService = productService;
     }
 
-    public OrderResponse findNearestWarehouse(Order order) {
+    public void findNearestWarehouse(Order order) {
         List<Warehouse> warehouses = productService
                 .findAll()
                 .stream()
@@ -48,16 +47,17 @@ public class OrderPlanningService {
         }
         Customer customer = customerService.findById(order.getCustomerId())
                 .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + order.getCustomerId()));
-        Warehouse closestWarehouse = warehouses.get(0);
+        Warehouse nearestWarehouse = warehouses.get(0);
         double minDistance = Double.MAX_VALUE;
         for (Warehouse warehouse : warehouses) {
             double currentDistance = distance(warehouse.getX(), warehouse.getY(), customer.getX(), customer.getY());
             if (currentDistance < minDistance) {
                 minDistance = currentDistance;
-                closestWarehouse = warehouse;
+                nearestWarehouse = warehouse;
             }
         }
-        return new OrderResponse(closestWarehouse, minDistance);
+        order.setWarehouse(nearestWarehouse);
+        order.setDistance(minDistance);
     }
 
     private double distance(int x1, int y1, int x2, int y2) {

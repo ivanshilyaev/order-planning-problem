@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Data
@@ -24,4 +21,11 @@ public class Order {
     @Id
     @NotBlank(message = "Product name is mandatory")
     private String productName;
+
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id", referencedColumnName = "id")
+    private Warehouse warehouse;
+
+    @Column(name = "distance")
+    private double distance;
 }

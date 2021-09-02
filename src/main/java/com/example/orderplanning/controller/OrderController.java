@@ -1,8 +1,9 @@
 package com.example.orderplanning.controller;
 
 import com.example.orderplanning.assembler.OrderModelAssembler;
+import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.Order;
-import com.example.orderplanning.entity.OrderResponse;
+import com.example.orderplanning.service.CustomerService;
 import com.example.orderplanning.service.OrderPlanningService;
 import com.example.orderplanning.service.OrderService;
 import org.springframework.hateoas.CollectionModel;
@@ -20,13 +21,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RestController
 public class OrderController {
     private final OrderService orderService;
+    private final CustomerService customerService;
     private final OrderPlanningService orderPlanningService;
     private final OrderModelAssembler assembler;
 
     public OrderController(OrderService orderService,
+                           CustomerService customerService,
                            OrderPlanningService orderPlanningService,
                            OrderModelAssembler assembler) {
         this.orderService = orderService;
+        this.customerService = customerService;
         this.orderPlanningService = orderPlanningService;
         this.assembler = assembler;
     }
@@ -46,15 +50,13 @@ public class OrderController {
     // containing the product, and distance to that warehouse
     @PostMapping("/orders")
     public ResponseEntity<?> newOrder(@Valid @RequestBody Order order) {
+        orderPlanningService.findNearestWarehouse(order);
         orderService.saveOrUpdate(order);
-        OrderResponse orderResponse = orderPlanningService.findNearestWarehouse(order);
+        EntityModel<Order> entityModel = assembler.toModel(order);
 
         return ResponseEntity
                 .created(assembler.toModel(order).getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(EntityModel.of(orderResponse,
-                        linkTo(methodOn(OrderController.class).one(order.getCustomerId(), order.getProductName()))
-                                .withSelfRel(),
-                        linkTo(methodOn(OrderController.class).all()).withRel("orders")));
+                .body(entityModel);
     }
 
     @GetMapping("/orders/{customerId}/{productName}")
