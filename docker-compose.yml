@@ -1,0 +1,26 @@
+version: '3.1'
+services:
+  app:
+    image: 'order-planning:latest'
+    build:
+      context: .
+    container_name: app
+    ports:
+      - '9090:9090'
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/order_planning
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  db:
+    image: postgres
+    ports:
+      - '5433:5433'
+    container_name: db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=order_planning
