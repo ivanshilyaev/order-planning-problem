@@ -3,8 +3,7 @@ package com.example.orderplanning.controller;
 import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,13 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class OrderPlanningExceptionHandler {
-    private static final Logger logger = LoggerFactory.getLogger(OrderPlanningExceptionHandler.class);
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException exception) {
-        logger.error("400 detected", exception);
+        log.error("400 detected", exception);
         Map<String, String> errors = new HashMap<>();
         exception.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
@@ -37,7 +35,7 @@ public class OrderPlanningExceptionHandler {
     @ExceptionHandler({NoHandlerFoundException.class, NoCustomerWithSuchIdException.class,
             NoWarehouseWithSuchIdException.class, NoWarehouseWithSuchProductException.class})
     public String handleNoHandlerFoundException(Exception exception) {
-        logger.error("404 detected", exception);
+        log.error("404 detected", exception);
         return exception.getMessage();
     }
 }

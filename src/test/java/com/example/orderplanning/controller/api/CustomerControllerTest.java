@@ -29,9 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CustomerController.class)
 public class CustomerControllerTest {
-    Customer customer1 = new Customer("Ivan", 50, 50);
-    Customer invalidCustomer1 = new Customer("", 50, 50);
-    Customer customer2 = new Customer("Pavel", 30, 60);
+    Customer customer1 = new Customer(1L, "Ivan", 50, 50);
+    Customer invalidCustomer1 = new Customer(1L, "", 50, 50);
+    Customer customer2 = new Customer(2L, "Pavel", 30, 60);
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -60,7 +60,7 @@ public class CustomerControllerTest {
                         .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.customerList", hasSize(2)))
-                .andExpect(jsonPath("$._embedded.customerList[1].id", is("Pavel")));
+                .andExpect(jsonPath("$._embedded.customerList[1].name", is("Pavel")));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class CustomerControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is("Ivan")));
+                .andExpect(jsonPath("$.name", is("Ivan")));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class CustomerControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.id", is("Id is mandatory")));
+                .andExpect(jsonPath("$.name", is("Name is mandatory")));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class CustomerControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is("Ivan")));
+                .andExpect(jsonPath("$.name", is("Ivan")));
     }
 
     @Test

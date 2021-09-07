@@ -2,20 +2,16 @@ package com.example.orderplanning.service;
 
 import com.example.orderplanning.dao.CustomerRepository;
 import com.example.orderplanning.entity.Customer;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
-
-    @Autowired
-    public CustomerService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
 
     public void saveOrUpdate(Customer customer) {
         customerRepository.save(customer);
@@ -25,11 +21,11 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Optional<Customer> findById(String id) {
+    public Optional<Customer> findById(Long id) {
         return customerRepository.findById(id);
     }
 
-    public void deleteById(String id) {
+    public void deleteById(Long id) {
         customerRepository.deleteById(id);
     }
 }

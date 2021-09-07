@@ -3,6 +3,8 @@ package com.example.orderplanning.controller;
 import com.example.orderplanning.assembler.CustomerModelAssembler;
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.service.CustomerService;
+import com.example.orderplanning.service.OrderPlanningService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -17,18 +19,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequiredArgsConstructor
 public class CustomerController {
-    private final CustomerService service;
+    private final CustomerService customerService;
     private final CustomerModelAssembler assembler;
-
-    public CustomerController(CustomerService service, CustomerModelAssembler assembler) {
-        this.service = service;
-        this.assembler = assembler;
-    }
+    private final OrderPlanningService orderPlanningService;
 
     @GetMapping("/customers")
     public ResponseEntity<CollectionModel<EntityModel<Customer>>> all() {
-        List<EntityModel<Customer>> customers = service.findAll()
+        List<EntityModel<Customer>> customers = customerService.findAll()
                 .stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
@@ -38,8 +37,9 @@ public class CustomerController {
     }
 
     @PostMapping("/customers")
-    public ResponseEntity<?> newCustomer(@Valid @RequestBody Customer customer) {
-        service.saveOrUpdate(customer);
+    public ResponseEntity<EntityModel<Customer>> newCustomer(@Valid @RequestBody Customer customer) {
+        customerService.saveOrUpdate(customer);
+        orderPlanningService.calculateDistanceToAllWarehouses(customer);
         EntityModel<Customer> entityModel = assembler.toModel(customer);
 
         return ResponseEntity
@@ -48,27 +48,30 @@ public class CustomerController {
     }
 
     @GetMapping("/customers/{id}")
-    public ResponseEntity<EntityModel<Customer>> one(@PathVariable String id) {
-        return service.findById(id)
+    public ResponseEntity<EntityModel<Customer>> one(@PathVariable Long id) {
+        return customerService.findById(id)
                 .map(assembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/customers/{id}")
-    public ResponseEntity<?> updateCustomer(@Valid @RequestBody Customer newCustomer, @PathVariable String id) {
-        Customer updatedCustomer = service.findById(id)
+    public ResponseEntity<EntityModel<Customer>> updateCustomer(@Valid @RequestBody Customer newCustomer,
+                                                                @PathVariable Long id
+    ) {
+        Customer updatedCustomer = customerService.findById(id)
                 .map(customer -> {
                     customer.setX(newCustomer.getX());
                     customer.setY(newCustomer.getY());
-                    service.saveOrUpdate(customer);
+                    customerService.saveOrUpdate(customer);
                     return customer;
                 }).orElseGet(() -> {
                     newCustomer.setId(id);
-                    service.saveOrUpdate(newCustomer);
+                    customerService.saveOrUpdate(newCustomer);
                     return newCustomer;
                 });
         EntityModel<Customer> entityModel = assembler.toModel(updatedCustomer);
+        orderPlanningService.calculateDistanceToAllWarehouses(updatedCustomer);
 
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
@@ -76,8 +79,8 @@ public class CustomerController {
     }
 
     @DeleteMapping("/customers/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
-        service.deleteById(id);
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        customerService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }

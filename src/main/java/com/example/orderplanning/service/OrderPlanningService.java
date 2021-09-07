@@ -1,66 +1,71 @@
 package com.example.orderplanning.service;
 
-import com.example.orderplanning.entity.Customer;
-import com.example.orderplanning.entity.Order;
-import com.example.orderplanning.entity.Warehouse;
+import com.example.orderplanning.entity.*;
 import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
-import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class OrderPlanningService {
-    private static final Logger logger = LoggerFactory.getLogger(OrderPlanningService.class);
     private final WarehouseService warehouseService;
     private final CustomerService customerService;
     private final ProductService productService;
+    private final CustomerWarehouseDistanceService service;
 
-    @Autowired
-    public OrderPlanningService(WarehouseService warehouseService,
-                                CustomerService customerService,
-                                ProductService productService
-    ) {
-        this.warehouseService = warehouseService;
-        this.customerService = customerService;
-        this.productService = productService;
+    public void calculateDistanceToAllWarehouses(Customer customer) {
+        List<CustomerWarehouseDistance> entities = service.findByCustomer(customer);
+        if (entities.isEmpty()) {
+            warehouseService.findAll()
+                    .forEach(warehouse -> {
+                        CustomerWarehouseDistance entity = CustomerWarehouseDistance.builder()
+                                .customer(customer)
+                                .warehouse(warehouse)
+                                .distance(distance(customer, warehouse))
+                                .build();
+                        service.saveOrUpdate(entity);
+                    });
+        } else {
+            entities.forEach(entity -> {
+                entity.setCustomer(customer);
+                Warehouse warehouse = warehouseService.findById(entity.getWarehouse().getId()).get();
+                entity.setDistance(distance(customer, warehouse));
+                service.saveOrUpdate(entity);
+            });
+        }
     }
 
     public void findNearestWarehouse(Order order) {
-        List<Warehouse> warehouses = productService
-                .findAll()
-                .stream()
-                .filter(p -> p.getName().equals(order.getProductName()))
-                .map(p -> warehouseService.findById(p.getWarehouseId())
-                        .orElseThrow(() -> new NoWarehouseWithSuchIdException(
-                                "No warehouse with id " + p.getWarehouseId())))
-                .collect(Collectors.toList());
-        if (warehouses.isEmpty()) {
-            String message = "Can't find warehouses containing product " + order.getProductName();
-            logger.error(message);
-            throw new NoWarehouseWithSuchProductException(message);
-        }
         Customer customer = customerService.findById(order.getCustomerId())
                 .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + order.getCustomerId()));
-        Warehouse nearestWarehouse = warehouses.get(0);
-        double minDistance = Double.MAX_VALUE;
-        for (Warehouse warehouse : warehouses) {
-            double currentDistance = distance(warehouse.getX(), warehouse.getY(), customer.getX(), customer.getY());
-            if (currentDistance < minDistance) {
-                minDistance = currentDistance;
-                nearestWarehouse = warehouse;
+        List<CustomerWarehouseDistance> entities = service.findByCustomerSorted(customer);
+        Warehouse nearestWarehouse = null;
+        double minDistance = 0;
+        for (CustomerWarehouseDistance entity : entities) {
+            List<Product> productList =
+                    productService.findByWarehouseIdAndName(entity.getWarehouse().getId(), order.getProductName());
+            if (!productList.isEmpty()) {
+                nearestWarehouse = warehouseService.findById(entity.getWarehouse().getId()).get();
+                minDistance = entity.getDistance();
+                break;
             }
+        }
+        if (nearestWarehouse == null) {
+            String message = "Can't find warehouses containing product " + order.getProductName();
+            log.error(message);
+            throw new NoWarehouseWithSuchProductException(message);
         }
         order.setWarehouse(nearestWarehouse);
         order.setDistance(minDistance);
     }
 
-    private double distance(int x1, int y1, int x2, int y2) {
-        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+    private double distance(Customer customer, Warehouse warehouse) {
+        return Math.sqrt(Math.pow(customer.getX() - warehouse.getX(), 2)
+                + Math.pow(customer.getY() - warehouse.getY(), 2));
     }
 }

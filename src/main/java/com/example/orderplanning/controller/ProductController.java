@@ -3,6 +3,7 @@ package com.example.orderplanning.controller;
 import com.example.orderplanning.assembler.ProductModelAssembler;
 import com.example.orderplanning.entity.Product;
 import com.example.orderplanning.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -13,17 +14,14 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequiredArgsConstructor
 public class ProductController {
     private final ProductService service;
     private final ProductModelAssembler assembler;
-
-    public ProductController(ProductService service, ProductModelAssembler assembler) {
-        this.service = service;
-        this.assembler = assembler;
-    }
 
     @GetMapping("/products")
     public ResponseEntity<CollectionModel<EntityModel<Product>>> all() {
@@ -37,7 +35,7 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ResponseEntity<?> newProduct(@Valid @RequestBody Product product) {
+    public ResponseEntity<EntityModel<Product>> newProduct(@Valid @RequestBody Product product) {
         service.saveOrUpdate(product);
         EntityModel<Product> entityModel = assembler.toModel(product);
 
@@ -46,11 +44,24 @@ public class ProductController {
                 .body(entityModel);
     }
 
-    @GetMapping("/products/{warehouseId}/{name}")
-    public ResponseEntity<EntityModel<Product>> one(@PathVariable String warehouseId, @PathVariable String name) {
-        return service.findByWarehouseIdAndName(warehouseId, name)
+    @GetMapping("/products/{id}")
+    public ResponseEntity<EntityModel<Product>> one(@PathVariable Long id) {
+        return service.findById(id)
                 .map(assembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/products?")
+    public ResponseEntity<CollectionModel<EntityModel<Product>>> search(@RequestParam Long warehouseId,
+                                                                        @RequestParam String name
+    ) {
+        List<EntityModel<Product>> products = service.findByWarehouseIdAndName(warehouseId, name)
+                .stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionModel.of(products,
+                linkTo(methodOn(ProductController.class).all()).withSelfRel()));
     }
 }

@@ -29,9 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(WarehouseController.class)
 public class WarehouseControllerTest {
-    Warehouse warehouse1 = new Warehouse("Minsk", 50, 50);
-    Warehouse invalidWarehouse1 = new Warehouse("", 50, 50);
-    Warehouse warehouse2 = new Warehouse("Gomel", 100, 0);
+    Warehouse warehouse1 = new Warehouse(1L, "Minsk", 50, 50);
+    Warehouse invalidWarehouse1 = new Warehouse(1L, "", 50, 50);
+    Warehouse warehouse2 = new Warehouse(2L, "Gomel", 100, 0);
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -60,7 +60,7 @@ public class WarehouseControllerTest {
                         .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.warehouseList", hasSize(2)))
-                .andExpect(jsonPath("$._embedded.warehouseList[0].id", is("Minsk")));
+                .andExpect(jsonPath("$._embedded.warehouseList[0].name", is("Minsk")));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class WarehouseControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is("Minsk")));
+                .andExpect(jsonPath("$.name", is("Minsk")));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class WarehouseControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is("Id is mandatory")));
+                .andExpect(jsonPath("$.name", is("Name is mandatory")));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class WarehouseControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.id", is("Minsk")));
+                .andExpect(jsonPath("$.name", is("Minsk")));
     }
 
     @Test
