@@ -55,7 +55,7 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/products?")
+    @GetMapping(value = "/products", params = {"warehouseId", "name"})
     public ResponseEntity<CollectionModel<EntityModel<Product>>> search(@RequestParam Long warehouseId,
                                                                         @RequestParam String name
     ) {

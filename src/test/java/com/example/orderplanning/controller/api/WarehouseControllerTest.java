@@ -61,7 +61,7 @@ public class WarehouseControllerTest {
                         .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.warehouseList", hasSize(2)))
-                .andExpect(jsonPath("$._embedded.warehouseList[0].name", is("Minsk")));
+                .andExpect(jsonPath("$._embedded.warehouseList[0].name", is(warehouse1.getName())));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class WarehouseControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Minsk")));
+                .andExpect(jsonPath("$.name", is(warehouse1.getName())));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class WarehouseControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Minsk")));
+                .andExpect(jsonPath("$.name", is(warehouse1.getName())));
     }
 
     @Test

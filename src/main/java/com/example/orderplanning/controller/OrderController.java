@@ -60,7 +60,7 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/orders?")
+    @GetMapping(value = "/orders", params = {"customerId", "productName"})
     public ResponseEntity<CollectionModel<EntityModel<Order>>> search(@RequestParam Long customerId,
                                                                       @RequestParam String productName
     ) {

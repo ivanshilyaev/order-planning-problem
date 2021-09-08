@@ -42,7 +42,7 @@ public class CustomerControllerTest {
     @MockBean
     private CustomerService service;
     @MockBean
-    OrderPlanningService orderPlanningService;
+    private OrderPlanningService orderPlanningService;
     @MockBean
     private CustomerModelAssembler assembler;
 
@@ -64,7 +64,7 @@ public class CustomerControllerTest {
                         .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.customerList", hasSize(2)))
-                .andExpect(jsonPath("$._embedded.customerList[1].name", is("Pavel")));
+                .andExpect(jsonPath("$._embedded.customerList[1].name", is(customer2.getName())));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class CustomerControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Ivan")));
+                .andExpect(jsonPath("$.name", is(customer1.getName())));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class CustomerControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.name", is("Ivan")));
+                .andExpect(jsonPath("$.name", is(customer1.getName())));
     }
 
     @Test
