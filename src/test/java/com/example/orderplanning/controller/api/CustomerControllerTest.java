@@ -4,6 +4,7 @@ import com.example.orderplanning.assembler.CustomerModelAssembler;
 import com.example.orderplanning.controller.CustomerController;
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.service.CustomerService;
+import com.example.orderplanning.service.OrderPlanningService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
@@ -39,21 +42,22 @@ public class CustomerControllerTest {
     @MockBean
     private CustomerService service;
     @MockBean
+    OrderPlanningService orderPlanningService;
+    @MockBean
     private CustomerModelAssembler assembler;
 
     @BeforeEach
     public void setUp() {
         Mockito.when(assembler.toModel(customer1)).thenReturn(EntityModel.of(customer1,
-                linkTo(methodOn(CustomerController.class).one(customer1.getId())).withSelfRel(),
-                linkTo(methodOn(CustomerController.class).all()).withRel("customers")));
+                linkTo(methodOn(CustomerController.class).one(customer1.getId())).withSelfRel()));
         Mockito.when(assembler.toModel(customer2)).thenReturn(EntityModel.of(customer2,
-                linkTo(methodOn(CustomerController.class).one(customer2.getId())).withSelfRel(),
-                linkTo(methodOn(CustomerController.class).all()).withRel("customers")));
+                linkTo(methodOn(CustomerController.class).one(customer2.getId())).withSelfRel()));
     }
 
     @Test
     public void allCustomersSuccess() throws Exception {
-        Mockito.when(service.findAll()).thenReturn(List.of(customer1, customer2));
+        Mockito.when(service.findAll(Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(customer1, customer2)));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/customers")

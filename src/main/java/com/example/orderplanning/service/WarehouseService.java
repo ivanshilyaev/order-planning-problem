@@ -3,9 +3,10 @@ package com.example.orderplanning.service;
 import com.example.orderplanning.dao.WarehouseRepository;
 import com.example.orderplanning.entity.Warehouse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,8 +18,8 @@ public class WarehouseService {
         warehouseRepository.save(warehouse);
     }
 
-    public List<Warehouse> findAll() {
-        return warehouseRepository.findAll();
+    public Page<Warehouse> findAll(Pageable pageable) {
+        return warehouseRepository.findAll(pageable);
     }
 
     public Optional<Warehouse> findById(Long id) {

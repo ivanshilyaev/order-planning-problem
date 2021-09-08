@@ -4,9 +4,13 @@ import com.example.orderplanning.assembler.ProductModelAssembler;
 import com.example.orderplanning.entity.Product;
 import com.example.orderplanning.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,16 +26,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ProductController {
     private final ProductService service;
     private final ProductModelAssembler assembler;
+    private final PagedResourcesAssembler<Product> pagedResourcesAssembler;
 
     @GetMapping("/products")
-    public ResponseEntity<CollectionModel<EntityModel<Product>>> all() {
-        List<EntityModel<Product>> products = service.findAll()
-                .stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
+    public ResponseEntity<CollectionModel<EntityModel<Product>>> all(Pageable pageable) {
+        Page<Product> page = service.findAll(pageable);
+        PagedModel<EntityModel<Product>> model = pagedResourcesAssembler.toModel(page, assembler);
 
-        return ResponseEntity.ok(CollectionModel.of(products,
-                linkTo(methodOn(ProductController.class).all()).withSelfRel()));
+        return ResponseEntity.ok(CollectionModel.of(model,
+                linkTo(methodOn(ProductController.class).all(pageable)).withSelfRel()));
     }
 
     @PostMapping("/products")
@@ -61,7 +64,6 @@ public class ProductController {
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(CollectionModel.of(products,
-                linkTo(methodOn(ProductController.class).all()).withSelfRel()));
+        return ResponseEntity.ok(CollectionModel.of(products));
     }
 }

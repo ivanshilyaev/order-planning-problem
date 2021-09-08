@@ -13,8 +13,8 @@ public class WarehouseModelAssembler implements RepresentationModelAssembler<War
 
     @Override
     public EntityModel<Warehouse> toModel(Warehouse warehouse) {
+
         return EntityModel.of(warehouse,
-                linkTo(methodOn(WarehouseController.class).one(warehouse.getId())).withSelfRel(),
-                linkTo(methodOn(WarehouseController.class).all()).withRel("warehouses"));
+                linkTo(methodOn(WarehouseController.class).one(warehouse.getId())).withSelfRel());
     }
 }

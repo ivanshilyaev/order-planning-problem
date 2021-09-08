@@ -4,15 +4,17 @@ import com.example.orderplanning.assembler.WarehouseModelAssembler;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.WarehouseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -22,16 +24,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class WarehouseController {
     private final WarehouseService service;
     private final WarehouseModelAssembler assembler;
+    private final PagedResourcesAssembler<Warehouse> pagedResourcesAssembler;
 
     @GetMapping("/warehouses")
-    public ResponseEntity<CollectionModel<EntityModel<Warehouse>>> all() {
-        List<EntityModel<Warehouse>> warehouses = service.findAll()
-                .stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
+    public ResponseEntity<CollectionModel<EntityModel<Warehouse>>> all(Pageable pageable) {
+        Page<Warehouse> page = service.findAll(pageable);
+        PagedModel<EntityModel<Warehouse>> model = pagedResourcesAssembler.toModel(page, assembler);
 
-        return ResponseEntity.ok(CollectionModel.of(warehouses,
-                linkTo(methodOn(WarehouseController.class).all()).withSelfRel()));
+        return ResponseEntity.ok(CollectionModel.of(model,
+                linkTo(methodOn(WarehouseController.class).all(pageable)).withSelfRel()));
     }
 
     @PostMapping("/warehouses")

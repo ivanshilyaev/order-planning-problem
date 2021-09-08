@@ -5,10 +5,13 @@ import com.example.orderplanning.entity.Order;
 import com.example.orderplanning.service.OrderPlanningService;
 import com.example.orderplanning.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,16 +28,15 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderPlanningService orderPlanningService;
     private final OrderModelAssembler assembler;
+    private final PagedResourcesAssembler<Order> pagedResourcesAssembler;
 
     @GetMapping("/orders")
-    public ResponseEntity<CollectionModel<EntityModel<Order>>> all() {
-        List<EntityModel<Order>> orders = orderService.findAll()
-                .stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
+    public ResponseEntity<CollectionModel<EntityModel<Order>>> all(Pageable pageable) {
+        Page<Order> page = orderService.findAll(pageable);
+        PagedModel<EntityModel<Order>> model = pagedResourcesAssembler.toModel(page, assembler);
 
-        return ResponseEntity.ok(CollectionModel.of(orders,
-                linkTo(methodOn(OrderController.class).all()).withSelfRel()));
+        return ResponseEntity.ok(CollectionModel.of(model,
+                linkTo(methodOn(OrderController.class).all(pageable)).withSelfRel()));
     }
 
     // returns the nearest to the customer warehouse,
@@ -67,7 +69,6 @@ public class OrderController {
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(CollectionModel.of(orders,
-                linkTo(methodOn(OrderController.class).all()).withSelfRel()));
+        return ResponseEntity.ok(CollectionModel.of(orders));
     }
 }

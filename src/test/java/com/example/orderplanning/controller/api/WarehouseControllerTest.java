@@ -11,6 +11,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
@@ -44,16 +46,15 @@ public class WarehouseControllerTest {
     @BeforeEach
     public void setUp() {
         Mockito.when(assembler.toModel(warehouse1)).thenReturn(EntityModel.of(warehouse1,
-                linkTo(methodOn(WarehouseController.class).one(warehouse1.getId())).withSelfRel(),
-                linkTo(methodOn(WarehouseController.class).all()).withRel("warehouses")));
+                linkTo(methodOn(WarehouseController.class).one(warehouse1.getId())).withSelfRel()));
         Mockito.when(assembler.toModel(warehouse2)).thenReturn(EntityModel.of(warehouse2,
-                linkTo(methodOn(WarehouseController.class).one(warehouse2.getId())).withSelfRel(),
-                linkTo(methodOn(WarehouseController.class).all()).withRel("warehouses")));
+                linkTo(methodOn(WarehouseController.class).one(warehouse2.getId())).withSelfRel()));
     }
 
     @Test
     public void allWarehousesSuccess() throws Exception {
-        Mockito.when(service.findAll()).thenReturn(List.of(warehouse1, warehouse2));
+        Mockito.when(service.findAll(Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(warehouse1, warehouse2)));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/warehouses")

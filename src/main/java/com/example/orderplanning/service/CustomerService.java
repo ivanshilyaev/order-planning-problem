@@ -3,9 +3,10 @@ package com.example.orderplanning.service;
 import com.example.orderplanning.dao.CustomerRepository;
 import com.example.orderplanning.entity.Customer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,8 +18,8 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
-    public List<Customer> findAll() {
-        return customerRepository.findAll();
+    public Page<Customer> findAll(Pageable pageable) {
+        return customerRepository.findAll(pageable);
     }
 
     public Optional<Customer> findById(Long id) {

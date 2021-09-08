@@ -5,6 +5,7 @@ import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class OrderPlanningService {
     public void calculateDistanceToAllWarehouses(Customer customer) {
         List<CustomerWarehouseDistance> entities = service.findByCustomer(customer);
         if (entities.isEmpty()) {
-            warehouseService.findAll()
+            warehouseService.findAll(Pageable.unpaged())
                     .forEach(warehouse -> {
                         CustomerWarehouseDistance entity = CustomerWarehouseDistance.builder()
                                 .customer(customer)
@@ -45,7 +46,7 @@ public class OrderPlanningService {
                 .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + order.getCustomerId()));
         List<CustomerWarehouseDistance> entities = service.findByCustomerSorted(customer);
         Warehouse nearestWarehouse = null;
-        double minDistance = 0;
+        double minDistance = Double.MAX_VALUE;
         for (CustomerWarehouseDistance entity : entities) {
             List<Product> productList =
                     productService.findByWarehouseIdAndName(entity.getWarehouse().getId(), order.getProductName());

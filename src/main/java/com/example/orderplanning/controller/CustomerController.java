@@ -5,15 +5,17 @@ import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.service.CustomerService;
 import com.example.orderplanning.service.OrderPlanningService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -24,16 +26,15 @@ public class CustomerController {
     private final CustomerService customerService;
     private final CustomerModelAssembler assembler;
     private final OrderPlanningService orderPlanningService;
+    private final PagedResourcesAssembler<Customer> pagedResourcesAssembler;
 
     @GetMapping("/customers")
-    public ResponseEntity<CollectionModel<EntityModel<Customer>>> all() {
-        List<EntityModel<Customer>> customers = customerService.findAll()
-                .stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
+    public ResponseEntity<CollectionModel<EntityModel<Customer>>> all(Pageable pageable) {
+        Page<Customer> page = customerService.findAll(pageable);
+        PagedModel<EntityModel<Customer>> model = pagedResourcesAssembler.toModel(page, assembler);
 
-        return ResponseEntity.ok(CollectionModel.of(customers,
-                linkTo(methodOn(CustomerController.class).all()).withSelfRel()));
+        return ResponseEntity.ok(CollectionModel.of(model,
+                linkTo(methodOn(CustomerController.class).all(pageable)).withSelfRel()));
     }
 
     @PostMapping("/customers")
