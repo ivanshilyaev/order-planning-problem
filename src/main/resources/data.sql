@@ -1,6 +1,3 @@
-INSERT INTO CUSTOMERS(id, name, x, y)
-VALUES (1, 'User', 45, 55);
-
 INSERT INTO WAREHOUSES (id, name, x, y)
 VALUES (1, 'Minsk', 50, 50),
        (2, 'Gomel', 100, 0),

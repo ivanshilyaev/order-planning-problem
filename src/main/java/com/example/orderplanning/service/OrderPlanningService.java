@@ -1,11 +1,15 @@
 package com.example.orderplanning.service;
 
-import com.example.orderplanning.entity.*;
+import com.example.orderplanning.entity.Customer;
+import com.example.orderplanning.entity.CustomerWarehouseDistance;
+import com.example.orderplanning.entity.Order;
+import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderPlanningService {
+    private static final int PAGE_SIZE = 10;
     private final WarehouseService warehouseService;
     private final CustomerService customerService;
     private final CustomerWarehouseDistanceService service;
@@ -21,15 +26,21 @@ public class OrderPlanningService {
     public void calculateDistanceToAllWarehouses(Customer customer) {
         List<CustomerWarehouseDistance> entities = service.findByCustomer(customer);
         if (entities.isEmpty()) {
-            warehouseService.findAll(Pageable.unpaged())
-                    .forEach(warehouse -> {
-                        CustomerWarehouseDistance entity = CustomerWarehouseDistance.builder()
-                                .customer(customer)
-                                .warehouse(warehouse)
-                                .distance(distance(customer, warehouse))
-                                .build();
-                        service.saveOrUpdate(entity);
-                    });
+            int i = 0;
+            while (true) {
+                Page<Warehouse> page = warehouseService.findAll(PageRequest.of(i++, PAGE_SIZE));
+                if (page.isEmpty()) {
+                    break;
+                }
+                page.forEach(warehouse -> {
+                    CustomerWarehouseDistance entity = CustomerWarehouseDistance.builder()
+                            .customer(customer)
+                            .warehouse(warehouse)
+                            .distance(distance(customer, warehouse))
+                            .build();
+                    service.saveOrUpdate(entity);
+                });
+            }
         } else {
             entities.forEach(entity -> {
                 entity.setCustomer(customer);
