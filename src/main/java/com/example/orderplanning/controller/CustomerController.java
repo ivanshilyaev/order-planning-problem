@@ -62,17 +62,23 @@ public class CustomerController {
     ) {
         Customer updatedCustomer = customerService.findById(id)
                 .map(customer -> {
+                    int previousX = customer.getX();
+                    int previousY = customer.getY();
+                    customer.setName(newCustomer.getName());
                     customer.setX(newCustomer.getX());
                     customer.setY(newCustomer.getY());
                     customerService.saveOrUpdate(customer);
+                    if (previousX != customer.getX() || previousY != customer.getY()) {
+                        orderPlanningService.calculateDistanceToAllWarehouses(customer);
+                    }
                     return customer;
                 }).orElseGet(() -> {
                     newCustomer.setId(id);
                     customerService.saveOrUpdate(newCustomer);
+                    orderPlanningService.calculateDistanceToAllWarehouses(newCustomer);
                     return newCustomer;
                 });
         EntityModel<Customer> entityModel = assembler.toModel(updatedCustomer);
-        orderPlanningService.calculateDistanceToAllWarehouses(updatedCustomer);
 
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())

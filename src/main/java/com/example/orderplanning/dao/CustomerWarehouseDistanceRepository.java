@@ -13,8 +13,9 @@ public interface CustomerWarehouseDistanceRepository extends JpaRepository<Custo
 
     List<CustomerWarehouseDistance> findByCustomer(Customer customer);
 
-    @Query(value = "select e from CustomerWarehouseDistance e where e.customer = ?1 order by e.distance")
-    List<CustomerWarehouseDistance> findByCustomerSorted(Customer customer);
+    @Query(value = "select e from CustomerWarehouseDistance e join Product p on e.warehouse.id = p.warehouseId" +
+            " where e.customer = ?1 and p.name = ?2 order by e.distance")
+    List<CustomerWarehouseDistance> findByCustomerAndProductName(Customer customer, String productName);
 
     Optional<CustomerWarehouseDistance> findByCustomerAndWarehouse(Customer customer, Warehouse warehouse);
 }

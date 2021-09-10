@@ -1,7 +1,6 @@
-package com.example.orderplanning.controller.api;
+package com.example.orderplanning.controller;
 
 import com.example.orderplanning.assembler.WarehouseModelAssembler;
-import com.example.orderplanning.controller.WarehouseController;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.WarehouseService;
 import com.fasterxml.jackson.databind.ObjectMapper;

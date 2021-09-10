@@ -1,6 +1,7 @@
 package com.example.orderplanning.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,12 +12,13 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "orders")
 public class Order {
 
-    private @Id
+    @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
     @Column(name = "customer_id")
     private Long customerId;

@@ -1,6 +1,7 @@
 package com.example.orderplanning.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,12 +12,13 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "customers")
 public class Customer {
 
-    private @Id
+    @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
     @NotBlank(message = "Name is mandatory")
     @Column(name = "name")

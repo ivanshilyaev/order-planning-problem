@@ -16,7 +16,6 @@ import java.util.List;
 public class OrderPlanningService {
     private final WarehouseService warehouseService;
     private final CustomerService customerService;
-    private final ProductService productService;
     private final CustomerWarehouseDistanceService service;
 
     public void calculateDistanceToAllWarehouses(Customer customer) {
@@ -44,25 +43,16 @@ public class OrderPlanningService {
     public void findNearestWarehouse(Order order) {
         Customer customer = customerService.findById(order.getCustomerId())
                 .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + order.getCustomerId()));
-        List<CustomerWarehouseDistance> entities = service.findByCustomerSorted(customer);
-        Warehouse nearestWarehouse = null;
-        double minDistance = Double.MAX_VALUE;
-        for (CustomerWarehouseDistance entity : entities) {
-            List<Product> productList =
-                    productService.findByWarehouseIdAndName(entity.getWarehouse().getId(), order.getProductName());
-            if (!productList.isEmpty()) {
-                nearestWarehouse = warehouseService.findById(entity.getWarehouse().getId()).get();
-                minDistance = entity.getDistance();
-                break;
-            }
-        }
-        if (nearestWarehouse == null) {
+        List<CustomerWarehouseDistance> entities =
+                service.findByCustomerAndProductName(customer, order.getProductName());
+        if (entities.isEmpty()) {
             String message = "Can't find warehouses containing product " + order.getProductName();
             log.error(message);
             throw new NoWarehouseWithSuchProductException(message);
         }
-        order.setWarehouse(nearestWarehouse);
-        order.setDistance(minDistance);
+        CustomerWarehouseDistance entity = entities.get(0);
+        order.setWarehouse(warehouseService.findById(entity.getWarehouse().getId()).get());
+        order.setDistance(entity.getDistance());
     }
 
     private double distance(Customer customer, Warehouse warehouse) {

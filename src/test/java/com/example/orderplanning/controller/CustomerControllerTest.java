@@ -1,7 +1,6 @@
-package com.example.orderplanning.controller.api;
+package com.example.orderplanning.controller;
 
 import com.example.orderplanning.assembler.CustomerModelAssembler;
-import com.example.orderplanning.controller.CustomerController;
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.service.CustomerService;
 import com.example.orderplanning.service.OrderPlanningService;

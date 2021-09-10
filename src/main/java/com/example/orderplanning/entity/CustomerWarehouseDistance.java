@@ -15,9 +15,9 @@ import javax.persistence.*;
 @Table(name = "customer_warehouse_distance")
 public class CustomerWarehouseDistance {
 
-    private @Id
+    @Id
     @GeneratedValue
-    Long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")

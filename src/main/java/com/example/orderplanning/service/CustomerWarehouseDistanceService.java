@@ -23,8 +23,8 @@ public class CustomerWarehouseDistanceService {
         return repository.findByCustomer(customer);
     }
 
-    public List<CustomerWarehouseDistance> findByCustomerSorted(Customer customer) {
-        return repository.findByCustomerSorted(customer);
+    public List<CustomerWarehouseDistance> findByCustomerAndProductName(Customer customer, String productName) {
+        return repository.findByCustomerAndProductName(customer, productName);
     }
 
     public Optional<CustomerWarehouseDistance> findByCustomerAndWarehouse(Customer customer, Warehouse warehouse) {
