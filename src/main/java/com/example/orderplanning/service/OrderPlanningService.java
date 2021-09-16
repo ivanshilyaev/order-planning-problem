@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -51,18 +52,46 @@ public class OrderPlanningService {
         }
     }
 
+    public void calculateDistanceToAllCustomers(Warehouse warehouse) {
+        List<CustomerWarehouseDistance> entities = service.findByWarehouse(warehouse);
+        if (entities.isEmpty()) {
+            int i = 0;
+            while (true) {
+                Page<Customer> page = customerService.findAll(PageRequest.of(i++, PAGE_SIZE));
+                if (page.isEmpty()) {
+                    break;
+                }
+                page.forEach(customer -> {
+                    CustomerWarehouseDistance entity = CustomerWarehouseDistance.builder()
+                            .customer(customer)
+                            .warehouse(warehouse)
+                            .distance(distance(customer, warehouse))
+                            .build();
+                    service.saveOrUpdate(entity);
+                });
+            }
+        } else {
+            entities.forEach(entity -> {
+                entity.setWarehouse(warehouse);
+                Customer customer = customerService.findById(entity.getCustomer().getId()).get();
+                entity.setDistance(distance(customer, warehouse));
+                service.saveOrUpdate(entity);
+            });
+        }
+    }
+
     public void findNearestWarehouse(Order order) {
         Customer customer = customerService.findById(order.getCustomerId())
                 .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + order.getCustomerId()));
-        List<CustomerWarehouseDistance> entities =
+        Optional<CustomerWarehouseDistance> entities =
                 service.findByCustomerAndProductName(customer, order.getProductName());
         if (entities.isEmpty()) {
             String message = "Can't find warehouses containing product " + order.getProductName();
             log.error(message);
             throw new NoWarehouseWithSuchProductException(message);
         }
-        CustomerWarehouseDistance entity = entities.get(0);
-        order.setWarehouse(warehouseService.findById(entity.getWarehouse().getId()).get());
+        CustomerWarehouseDistance entity = entities.get();
+        order.setWarehouse(entity.getWarehouse());
         order.setDistance(entity.getDistance());
     }
 

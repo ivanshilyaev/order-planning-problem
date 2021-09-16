@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class CustomerWarehouseDistance {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne

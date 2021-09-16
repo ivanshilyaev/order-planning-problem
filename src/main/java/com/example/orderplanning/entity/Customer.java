@@ -17,7 +17,7 @@ import javax.validation.constraints.NotBlank;
 public class Customer {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Name is mandatory")

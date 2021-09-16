@@ -23,11 +23,23 @@ public class CustomerWarehouseDistanceService {
         return repository.findByCustomer(customer);
     }
 
-    public List<CustomerWarehouseDistance> findByCustomerAndProductName(Customer customer, String productName) {
+    public List<CustomerWarehouseDistance> findByWarehouse(Warehouse warehouse) {
+        return repository.findByWarehouse(warehouse);
+    }
+
+    public Optional<CustomerWarehouseDistance> findByCustomerAndProductName(Customer customer, String productName) {
         return repository.findByCustomerAndProductName(customer, productName);
     }
 
     public Optional<CustomerWarehouseDistance> findByCustomerAndWarehouse(Customer customer, Warehouse warehouse) {
         return repository.findByCustomerAndWarehouse(customer, warehouse);
+    }
+
+    public void deleteByCustomer(Customer customer) {
+        repository.deleteByCustomer(customer);
+    }
+
+    public void deleteByWarehouse(Warehouse warehouse) {
+        repository.deleteByWarehouse(warehouse);
     }
 }
