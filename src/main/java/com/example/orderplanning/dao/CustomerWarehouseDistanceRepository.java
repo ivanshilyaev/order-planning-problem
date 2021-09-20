@@ -3,6 +3,8 @@ package com.example.orderplanning.dao;
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.CustomerWarehouseDistance;
 import com.example.orderplanning.entity.Warehouse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,12 +19,10 @@ public interface CustomerWarehouseDistanceRepository extends JpaRepository<Custo
 
     List<CustomerWarehouseDistance> findByWarehouse(Warehouse warehouse);
 
-    // TODO: could be better
     @Query(value = "select e from CustomerWarehouseDistance e join Product p on e.warehouse.id = p.warehouseId" +
-            " where e.customer = ?1 and p.name = ?2 and e.distance = " +
-            "(select min(e.distance) from CustomerWarehouseDistance e join Product p" +
-            " on e.warehouse.id = p.warehouseId where e.customer = ?1 and p.name = ?2)")
-    Optional<CustomerWarehouseDistance> findByCustomerAndProductName(Customer customer, String productName);
+            " where e.customer = ?1 and p.name = ?2 order by e.distance")
+    Page<CustomerWarehouseDistance> findByCustomerAndProductName(Customer customer, String productName,
+                                                                 Pageable pageable);
 
     Optional<CustomerWarehouseDistance> findByCustomerAndWarehouse(Customer customer, Warehouse warehouse);
 

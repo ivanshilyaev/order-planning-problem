@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -83,14 +82,13 @@ public class OrderPlanningService {
     public void findNearestWarehouse(Order order) {
         Customer customer = customerService.findById(order.getCustomerId())
                 .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + order.getCustomerId()));
-        Optional<CustomerWarehouseDistance> entities =
-                service.findByCustomerAndProductName(customer, order.getProductName());
-        if (entities.isEmpty()) {
+        Page<CustomerWarehouseDistance> entities =
+                service.findByCustomerAndProductName(customer, order.getProductName(), PageRequest.of(0, 1));
+        CustomerWarehouseDistance entity = entities.stream().findFirst().orElseThrow(() -> {
             String message = "Can't find warehouses containing product " + order.getProductName();
             log.error(message);
             throw new NoWarehouseWithSuchProductException(message);
-        }
-        CustomerWarehouseDistance entity = entities.get();
+        });
         order.setWarehouse(entity.getWarehouse());
         order.setDistance(entity.getDistance());
     }

@@ -5,6 +5,8 @@ import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.CustomerWarehouseDistance;
 import com.example.orderplanning.entity.Warehouse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,8 +29,9 @@ public class CustomerWarehouseDistanceService {
         return repository.findByWarehouse(warehouse);
     }
 
-    public Optional<CustomerWarehouseDistance> findByCustomerAndProductName(Customer customer, String productName) {
-        return repository.findByCustomerAndProductName(customer, productName);
+    public Page<CustomerWarehouseDistance> findByCustomerAndProductName(Customer customer, String productName,
+                                                                        Pageable pageable) {
+        return repository.findByCustomerAndProductName(customer, productName, pageable);
     }
 
     public Optional<CustomerWarehouseDistance> findByCustomerAndWarehouse(Customer customer, Warehouse warehouse) {
