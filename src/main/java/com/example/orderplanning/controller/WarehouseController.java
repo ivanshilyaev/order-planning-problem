@@ -2,7 +2,7 @@ package com.example.orderplanning.controller;
 
 import com.example.orderplanning.assembler.WarehouseModelAssembler;
 import com.example.orderplanning.entity.Warehouse;
-import com.example.orderplanning.service.CustomerWarehouseDistanceService;
+import com.example.orderplanning.service.exception.CustomerWarehouseDistanceService;
 import com.example.orderplanning.service.OrderPlanningService;
 import com.example.orderplanning.service.WarehouseService;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
@@ -42,8 +42,7 @@ public class WarehouseController {
 
     @PostMapping("/warehouses")
     public ResponseEntity<EntityModel<Warehouse>> newWarehouse(@Valid @RequestBody Warehouse warehouse) {
-        warehouseService.saveOrUpdate(warehouse);
-        orderPlanningService.calculateDistanceToAllCustomers(warehouse);
+        warehouseService.save(warehouse);
         EntityModel<Warehouse> entityModel = assembler.toModel(warehouse);
 
         return ResponseEntity
@@ -63,24 +62,7 @@ public class WarehouseController {
     public ResponseEntity<EntityModel<Warehouse>> updateWarehouse(@Valid @RequestBody Warehouse newWarehouse,
                                                                   @PathVariable Long id
     ) {
-        Warehouse updatedWarehouse = warehouseService.findById(id)
-                .map(warehouse -> {
-                    int previousX = warehouse.getX();
-                    int previousY = warehouse.getY();
-                    warehouse.setName(newWarehouse.getName());
-                    warehouse.setX(newWarehouse.getX());
-                    warehouse.setY(newWarehouse.getY());
-                    warehouseService.saveOrUpdate(warehouse);
-                    if (previousX != warehouse.getX() || previousY != warehouse.getY()) {
-                        orderPlanningService.calculateDistanceToAllCustomers(warehouse);
-                    }
-                    return warehouse;
-                }).orElseGet(() -> {
-                    newWarehouse.setId(id);
-                    warehouseService.saveOrUpdate(newWarehouse);
-                    orderPlanningService.calculateDistanceToAllCustomers(newWarehouse);
-                    return newWarehouse;
-                });
+        Warehouse updatedWarehouse = warehouseService.update(newWarehouse, id);
         EntityModel<Warehouse> entityModel = assembler.toModel(updatedWarehouse);
 
         return ResponseEntity

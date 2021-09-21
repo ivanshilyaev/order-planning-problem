@@ -3,8 +3,7 @@ package com.example.orderplanning.controller;
 import com.example.orderplanning.assembler.CustomerModelAssembler;
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.service.CustomerService;
-import com.example.orderplanning.service.CustomerWarehouseDistanceService;
-import com.example.orderplanning.service.OrderPlanningService;
+import com.example.orderplanning.service.exception.CustomerWarehouseDistanceService;
 import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +25,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 public class CustomerController {
     private final CustomerService customerService;
-    private final OrderPlanningService orderPlanningService;
     private final CustomerWarehouseDistanceService cwdService;
     private final CustomerModelAssembler assembler;
     private final PagedResourcesAssembler<Customer> pagedResourcesAssembler;
@@ -42,8 +40,7 @@ public class CustomerController {
 
     @PostMapping("/customers")
     public ResponseEntity<EntityModel<Customer>> newCustomer(@Valid @RequestBody Customer customer) {
-        customerService.saveOrUpdate(customer);
-        orderPlanningService.calculateDistanceToAllWarehouses(customer);
+        customerService.save(customer);
         EntityModel<Customer> entityModel = assembler.toModel(customer);
 
         return ResponseEntity
@@ -63,24 +60,7 @@ public class CustomerController {
     public ResponseEntity<EntityModel<Customer>> updateCustomer(@Valid @RequestBody Customer newCustomer,
                                                                 @PathVariable Long id
     ) {
-        Customer updatedCustomer = customerService.findById(id)
-                .map(customer -> {
-                    int previousX = customer.getX();
-                    int previousY = customer.getY();
-                    customer.setName(newCustomer.getName());
-                    customer.setX(newCustomer.getX());
-                    customer.setY(newCustomer.getY());
-                    customerService.saveOrUpdate(customer);
-                    if (previousX != customer.getX() || previousY != customer.getY()) {
-                        orderPlanningService.calculateDistanceToAllWarehouses(customer);
-                    }
-                    return customer;
-                }).orElseGet(() -> {
-                    newCustomer.setId(id);
-                    customerService.saveOrUpdate(newCustomer);
-                    orderPlanningService.calculateDistanceToAllWarehouses(newCustomer);
-                    return newCustomer;
-                });
+        Customer updatedCustomer = customerService.update(newCustomer, id);
         EntityModel<Customer> entityModel = assembler.toModel(updatedCustomer);
 
         return ResponseEntity

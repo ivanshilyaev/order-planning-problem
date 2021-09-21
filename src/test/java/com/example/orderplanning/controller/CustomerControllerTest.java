@@ -68,7 +68,7 @@ public class CustomerControllerTest {
 
     @Test
     public void newCustomerSuccess() throws Exception {
-        Mockito.doNothing().when(service).saveOrUpdate(customer1);
+        Mockito.doNothing().when(service).save(customer1);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -106,7 +106,7 @@ public class CustomerControllerTest {
 
     @Test
     public void updateCustomerSuccess() throws Exception {
-        Mockito.doNothing().when(service).saveOrUpdate(customer1);
+        Mockito.doNothing().when(service).save(customer1);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/customers/" + customer1.getId())
                 .contentType(MediaType.APPLICATION_JSON)

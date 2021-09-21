@@ -1,4 +1,4 @@
-package com.example.orderplanning.service;
+package com.example.orderplanning.service.exception;
 
 import com.example.orderplanning.dao.CustomerWarehouseDistanceRepository;
 import com.example.orderplanning.entity.Customer;

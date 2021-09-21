@@ -65,7 +65,7 @@ public class WarehouseControllerTest {
 
     @Test
     public void newWarehouseSuccess() throws Exception {
-        Mockito.doNothing().when(service).saveOrUpdate(warehouse1);
+        Mockito.doNothing().when(service).save(warehouse1);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/warehouses")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -104,7 +104,7 @@ public class WarehouseControllerTest {
 
     @Test
     public void updateWarehouseSuccess() throws Exception {
-        Mockito.doNothing().when(service).saveOrUpdate(warehouse1);
+        Mockito.doNothing().when(service).save(warehouse1);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/warehouses/"
                         + warehouse1.getId())

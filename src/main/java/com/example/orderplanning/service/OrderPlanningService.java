@@ -1,9 +1,12 @@
 package com.example.orderplanning.service;
 
+import com.example.orderplanning.dao.CustomerRepository;
+import com.example.orderplanning.dao.WarehouseRepository;
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.entity.CustomerWarehouseDistance;
 import com.example.orderplanning.entity.Order;
 import com.example.orderplanning.entity.Warehouse;
+import com.example.orderplanning.service.exception.CustomerWarehouseDistanceService;
 import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
 import com.example.orderplanning.service.exception.NoWarehouseWithSuchProductException;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +22,8 @@ import java.util.List;
 @Slf4j
 public class OrderPlanningService {
     private static final int PAGE_SIZE = 10;
-    private final WarehouseService warehouseService;
-    private final CustomerService customerService;
+    private final WarehouseRepository warehouseRepository;
+    private final CustomerRepository customerRepository;
     private final CustomerWarehouseDistanceService service;
 
     public void calculateDistanceToAllWarehouses(Customer customer) {
@@ -28,7 +31,7 @@ public class OrderPlanningService {
         if (entities.isEmpty()) {
             int i = 0;
             while (true) {
-                Page<Warehouse> page = warehouseService.findAll(PageRequest.of(i++, PAGE_SIZE));
+                Page<Warehouse> page = warehouseRepository.findAll(PageRequest.of(i++, PAGE_SIZE));
                 if (page.isEmpty()) {
                     break;
                 }
@@ -44,7 +47,7 @@ public class OrderPlanningService {
         } else {
             entities.forEach(entity -> {
                 entity.setCustomer(customer);
-                Warehouse warehouse = warehouseService.findById(entity.getWarehouse().getId()).get();
+                Warehouse warehouse = warehouseRepository.findById(entity.getWarehouse().getId()).get();
                 entity.setDistance(distance(customer, warehouse));
                 service.saveOrUpdate(entity);
             });
@@ -56,7 +59,7 @@ public class OrderPlanningService {
         if (entities.isEmpty()) {
             int i = 0;
             while (true) {
-                Page<Customer> page = customerService.findAll(PageRequest.of(i++, PAGE_SIZE));
+                Page<Customer> page = customerRepository.findAll(PageRequest.of(i++, PAGE_SIZE));
                 if (page.isEmpty()) {
                     break;
                 }
@@ -72,7 +75,7 @@ public class OrderPlanningService {
         } else {
             entities.forEach(entity -> {
                 entity.setWarehouse(warehouse);
-                Customer customer = customerService.findById(entity.getCustomer().getId()).get();
+                Customer customer = customerRepository.findById(entity.getCustomer().getId()).get();
                 entity.setDistance(distance(customer, warehouse));
                 service.saveOrUpdate(entity);
             });
@@ -80,7 +83,7 @@ public class OrderPlanningService {
     }
 
     public void findNearestWarehouse(Order order) {
-        Customer customer = customerService.findById(order.getCustomerId())
+        Customer customer = customerRepository.findById(order.getCustomerId())
                 .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + order.getCustomerId()));
         Page<CustomerWarehouseDistance> entities =
                 service.findByCustomerAndProductName(customer, order.getProductName(), PageRequest.of(0, 1));

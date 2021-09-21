@@ -65,7 +65,7 @@ public class OrderControllerTest {
 
     @Test
     public void newOrderSuccess() throws Exception {
-        Mockito.doNothing().when(service).saveOrUpdate(order);
+        Mockito.doNothing().when(service).save(order);
         Mockito.doNothing().when(orderPlanningService).findNearestWarehouse(order);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/orders")

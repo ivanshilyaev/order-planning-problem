@@ -43,8 +43,7 @@ public class OrderController {
     // containing the product, and distance to that warehouse
     @PostMapping("/orders")
     public ResponseEntity<EntityModel<Order>> newOrder(@Valid @RequestBody Order order) {
-        orderPlanningService.findNearestWarehouse(order);
-        orderService.saveOrUpdate(order);
+        orderService.save(order);
         EntityModel<Order> entityModel = assembler.toModel(order);
 
         return ResponseEntity
