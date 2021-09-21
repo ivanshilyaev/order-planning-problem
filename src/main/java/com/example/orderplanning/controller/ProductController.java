@@ -39,7 +39,7 @@ public class ProductController {
 
     @PostMapping("/products")
     public ResponseEntity<EntityModel<Product>> newProduct(@Valid @RequestBody Product product) {
-        service.saveOrUpdate(product);
+        service.save(product);
         EntityModel<Product> entityModel = assembler.toModel(product);
 
         return ResponseEntity

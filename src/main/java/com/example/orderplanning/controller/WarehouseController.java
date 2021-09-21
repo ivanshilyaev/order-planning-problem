@@ -2,10 +2,7 @@ package com.example.orderplanning.controller;
 
 import com.example.orderplanning.assembler.WarehouseModelAssembler;
 import com.example.orderplanning.entity.Warehouse;
-import com.example.orderplanning.service.exception.CustomerWarehouseDistanceService;
-import com.example.orderplanning.service.OrderPlanningService;
 import com.example.orderplanning.service.WarehouseService;
-import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +23,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 public class WarehouseController {
     private final WarehouseService warehouseService;
-    private final OrderPlanningService orderPlanningService;
-    private final CustomerWarehouseDistanceService cwdService;
     private final WarehouseModelAssembler assembler;
     private final PagedResourcesAssembler<Warehouse> pagedResourcesAssembler;
 
@@ -72,9 +67,6 @@ public class WarehouseController {
 
     @DeleteMapping("/warehouses/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        Warehouse warehouse = warehouseService.findById(id)
-                .orElseThrow(() -> new NoWarehouseWithSuchIdException("No warehouse with id " + id));
-        cwdService.deleteByWarehouse(warehouse);
         warehouseService.deleteById(id);
 
         return ResponseEntity.noContent().build();

@@ -2,6 +2,8 @@ package com.example.orderplanning.service;
 
 import com.example.orderplanning.dao.WarehouseRepository;
 import com.example.orderplanning.entity.Warehouse;
+import com.example.orderplanning.service.exception.CustomerWarehouseDistanceService;
+import com.example.orderplanning.service.exception.NoWarehouseWithSuchIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class WarehouseService {
     private final WarehouseRepository warehouseRepository;
     private final OrderPlanningService orderPlanningService;
+    private final CustomerWarehouseDistanceService cwdService;
 
     @Transactional
     public void save(Warehouse warehouse) {
@@ -52,7 +55,11 @@ public class WarehouseService {
         return warehouseRepository.findById(id);
     }
 
+    @Transactional
     public void deleteById(Long id) {
+        Warehouse warehouse = findById(id)
+                .orElseThrow(() -> new NoWarehouseWithSuchIdException("No warehouse with id " + id));
+        cwdService.deleteByWarehouse(warehouse);
         warehouseRepository.deleteById(id);
     }
 }

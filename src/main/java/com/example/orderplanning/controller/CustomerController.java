@@ -3,8 +3,6 @@ package com.example.orderplanning.controller;
 import com.example.orderplanning.assembler.CustomerModelAssembler;
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.service.CustomerService;
-import com.example.orderplanning.service.exception.CustomerWarehouseDistanceService;
-import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +23,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 public class CustomerController {
     private final CustomerService customerService;
-    private final CustomerWarehouseDistanceService cwdService;
     private final CustomerModelAssembler assembler;
     private final PagedResourcesAssembler<Customer> pagedResourcesAssembler;
 
@@ -70,9 +67,6 @@ public class CustomerController {
 
     @DeleteMapping("/customers/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        Customer customer = customerService.findById(id)
-                .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + id));
-        cwdService.deleteByCustomer(customer);
         customerService.deleteById(id);
 
         return ResponseEntity.noContent().build();

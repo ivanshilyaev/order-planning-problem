@@ -105,6 +105,7 @@ public class WarehouseControllerTest {
     @Test
     public void updateWarehouseSuccess() throws Exception {
         Mockito.doNothing().when(service).save(warehouse1);
+        Mockito.when(service.update(warehouse1, warehouse1.getId())).thenReturn(warehouse1);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/warehouses/"
                         + warehouse1.getId())

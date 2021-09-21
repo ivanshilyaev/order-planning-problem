@@ -3,7 +3,6 @@ package com.example.orderplanning.controller;
 import com.example.orderplanning.assembler.CustomerModelAssembler;
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.service.CustomerService;
-import com.example.orderplanning.service.OrderPlanningService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,17 +30,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CustomerController.class)
 public class CustomerControllerTest {
-    Customer customer1 = new Customer(1L, "Ivan", 50, 50);
+    Customer customer1 = new Customer(1L, "User1", 50, 50);
     Customer invalidCustomer1 = new Customer(1L, "", 50, 50);
-    Customer customer2 = new Customer(2L, "Pavel", 30, 60);
+    Customer customer2 = new Customer(2L, "User2", 30, 60);
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @MockBean
     private CustomerService service;
-    @MockBean
-    private OrderPlanningService orderPlanningService;
     @MockBean
     private CustomerModelAssembler assembler;
 
@@ -107,6 +104,7 @@ public class CustomerControllerTest {
     @Test
     public void updateCustomerSuccess() throws Exception {
         Mockito.doNothing().when(service).save(customer1);
+        Mockito.when(service.update(customer1, customer1.getId())).thenReturn(customer1);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/customers/" + customer1.getId())
                 .contentType(MediaType.APPLICATION_JSON)

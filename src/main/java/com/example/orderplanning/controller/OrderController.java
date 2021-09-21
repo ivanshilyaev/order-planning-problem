@@ -2,7 +2,6 @@ package com.example.orderplanning.controller;
 
 import com.example.orderplanning.assembler.OrderModelAssembler;
 import com.example.orderplanning.entity.Order;
-import com.example.orderplanning.service.OrderPlanningService;
 import com.example.orderplanning.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +25,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
-    private final OrderPlanningService orderPlanningService;
     private final OrderModelAssembler assembler;
     private final PagedResourcesAssembler<Order> pagedResourcesAssembler;
 

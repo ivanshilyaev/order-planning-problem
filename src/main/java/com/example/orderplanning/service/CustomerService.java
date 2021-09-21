@@ -2,6 +2,8 @@ package com.example.orderplanning.service;
 
 import com.example.orderplanning.dao.CustomerRepository;
 import com.example.orderplanning.entity.Customer;
+import com.example.orderplanning.service.exception.CustomerWarehouseDistanceService;
+import com.example.orderplanning.service.exception.NoCustomerWithSuchIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class CustomerService {
     private final CustomerRepository customerRepository;
     private final OrderPlanningService orderPlanningService;
+    private final CustomerWarehouseDistanceService cwdService;
 
     @Transactional
     public void save(Customer customer) {
@@ -51,7 +54,11 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
+    @Transactional
     public void deleteById(Long id) {
+        Customer customer = findById(id)
+                .orElseThrow(() -> new NoCustomerWithSuchIdException("No customer with id " + id));
+        cwdService.deleteByCustomer(customer);
         customerRepository.deleteById(id);
     }
 }
