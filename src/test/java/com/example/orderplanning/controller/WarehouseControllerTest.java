@@ -1,10 +1,8 @@
 package com.example.orderplanning.controller;
 
-import com.example.orderplanning.assembler.WarehouseModelAssembler;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.WarehouseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,8 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,16 +34,6 @@ public class WarehouseControllerTest {
     private ObjectMapper mapper;
     @MockBean
     private WarehouseService service;
-    @MockBean
-    private WarehouseModelAssembler assembler;
-
-    @BeforeEach
-    public void setUp() {
-        Mockito.when(assembler.toModel(warehouse1)).thenReturn(EntityModel.of(warehouse1,
-                linkTo(methodOn(WarehouseController.class).one(warehouse1.getId())).withSelfRel()));
-        Mockito.when(assembler.toModel(warehouse2)).thenReturn(EntityModel.of(warehouse2,
-                linkTo(methodOn(WarehouseController.class).one(warehouse2.getId())).withSelfRel()));
-    }
 
     @Test
     public void allWarehousesSuccess() throws Exception {
