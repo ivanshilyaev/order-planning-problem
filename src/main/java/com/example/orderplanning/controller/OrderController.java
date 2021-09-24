@@ -23,12 +23,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/orders")
 public class OrderController {
     private final OrderService orderService;
     private final OrderModelAssembler assembler;
     private final PagedResourcesAssembler<Order> pagedResourcesAssembler;
 
-    @GetMapping("/orders")
+    @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<Order>>> all(Pageable pageable) {
         Page<Order> page = orderService.findAll(pageable);
         PagedModel<EntityModel<Order>> model = pagedResourcesAssembler.toModel(page, assembler);
@@ -39,7 +40,7 @@ public class OrderController {
 
     // returns the nearest to the customer warehouse,
     // containing the product, and distance to that warehouse
-    @PostMapping("/orders")
+    @PostMapping
     public ResponseEntity<EntityModel<Order>> newOrder(@Valid @RequestBody Order order) {
         orderService.save(order);
         EntityModel<Order> entityModel = assembler.toModel(order);
@@ -49,7 +50,7 @@ public class OrderController {
                 .body(entityModel);
     }
 
-    @GetMapping("/orders/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<EntityModel<Order>> one(@PathVariable Long id) {
         return orderService.findById(id)
                 .map(assembler::toModel)
@@ -57,7 +58,7 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(value = "/orders", params = {"customerId", "productName"})
+    @GetMapping(params = {"customerId", "productName"})
     public ResponseEntity<CollectionModel<EntityModel<Order>>> search(@RequestParam Long customerId,
                                                                       @RequestParam String productName
     ) {

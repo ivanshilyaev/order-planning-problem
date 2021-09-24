@@ -21,12 +21,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/warehouses")
 public class WarehouseController {
     private final WarehouseService warehouseService;
     private final WarehouseModelAssembler assembler;
     private final PagedResourcesAssembler<Warehouse> pagedResourcesAssembler;
 
-    @GetMapping("/warehouses")
+    @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<Warehouse>>> all(Pageable pageable) {
         Page<Warehouse> page = warehouseService.findAll(pageable);
         PagedModel<EntityModel<Warehouse>> model = pagedResourcesAssembler.toModel(page, assembler);
@@ -35,7 +36,7 @@ public class WarehouseController {
                 linkTo(methodOn(WarehouseController.class).all(pageable)).withSelfRel()));
     }
 
-    @PostMapping("/warehouses")
+    @PostMapping
     public ResponseEntity<EntityModel<Warehouse>> newWarehouse(@Valid @RequestBody Warehouse warehouse) {
         warehouseService.save(warehouse);
         EntityModel<Warehouse> entityModel = assembler.toModel(warehouse);
@@ -45,7 +46,7 @@ public class WarehouseController {
                 .body(entityModel);
     }
 
-    @GetMapping("/warehouses/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<EntityModel<Warehouse>> one(@PathVariable Long id) {
         return warehouseService.findById(id)
                 .map(assembler::toModel)
@@ -53,7 +54,7 @@ public class WarehouseController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/warehouses/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<EntityModel<Warehouse>> updateWarehouse(@Valid @RequestBody Warehouse newWarehouse,
                                                                   @PathVariable Long id
     ) {
@@ -65,7 +66,7 @@ public class WarehouseController {
                 .body(entityModel);
     }
 
-    @DeleteMapping("/warehouses/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         warehouseService.deleteById(id);
 

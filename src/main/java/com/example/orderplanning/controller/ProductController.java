@@ -23,12 +23,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/products")
 public class ProductController {
     private final ProductService service;
     private final ProductModelAssembler assembler;
     private final PagedResourcesAssembler<Product> pagedResourcesAssembler;
 
-    @GetMapping("/products")
+    @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<Product>>> all(Pageable pageable) {
         Page<Product> page = service.findAll(pageable);
         PagedModel<EntityModel<Product>> model = pagedResourcesAssembler.toModel(page, assembler);
@@ -37,7 +38,7 @@ public class ProductController {
                 linkTo(methodOn(ProductController.class).all(pageable)).withSelfRel()));
     }
 
-    @PostMapping("/products")
+    @PostMapping
     public ResponseEntity<EntityModel<Product>> newProduct(@Valid @RequestBody Product product) {
         service.save(product);
         EntityModel<Product> entityModel = assembler.toModel(product);
@@ -47,7 +48,7 @@ public class ProductController {
                 .body(entityModel);
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<EntityModel<Product>> one(@PathVariable Long id) {
         return service.findById(id)
                 .map(assembler::toModel)
@@ -55,7 +56,7 @@ public class ProductController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(value = "/products", params = {"warehouseId", "name"})
+    @GetMapping(params = {"warehouseId", "name"})
     public ResponseEntity<CollectionModel<EntityModel<Product>>> search(@RequestParam Long warehouseId,
                                                                         @RequestParam String name
     ) {

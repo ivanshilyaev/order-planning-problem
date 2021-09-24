@@ -21,12 +21,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/customers")
 public class CustomerController {
     private final CustomerService customerService;
     private final CustomerModelAssembler assembler;
     private final PagedResourcesAssembler<Customer> pagedResourcesAssembler;
 
-    @GetMapping("/customers")
+    @GetMapping
     public ResponseEntity<CollectionModel<EntityModel<Customer>>> all(Pageable pageable) {
         Page<Customer> page = customerService.findAll(pageable);
         PagedModel<EntityModel<Customer>> model = pagedResourcesAssembler.toModel(page, assembler);
@@ -35,7 +36,7 @@ public class CustomerController {
                 linkTo(methodOn(CustomerController.class).all(pageable)).withSelfRel()));
     }
 
-    @PostMapping("/customers")
+    @PostMapping
     public ResponseEntity<EntityModel<Customer>> newCustomer(@Valid @RequestBody Customer customer) {
         customerService.save(customer);
         EntityModel<Customer> entityModel = assembler.toModel(customer);
@@ -45,7 +46,7 @@ public class CustomerController {
                 .body(entityModel);
     }
 
-    @GetMapping("/customers/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<EntityModel<Customer>> one(@PathVariable Long id) {
         return customerService.findById(id)
                 .map(assembler::toModel)
@@ -53,7 +54,7 @@ public class CustomerController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/customers/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<EntityModel<Customer>> updateCustomer(@Valid @RequestBody Customer newCustomer,
                                                                 @PathVariable Long id
     ) {
@@ -65,7 +66,7 @@ public class CustomerController {
                 .body(entityModel);
     }
 
-    @DeleteMapping("/customers/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         customerService.deleteById(id);
 
