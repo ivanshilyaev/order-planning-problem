@@ -4,29 +4,26 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Builder
-@Table(name = "customer_warehouse_distance")
+@Document
 public class CustomerWarehouseDistance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
-    private Customer customer;
+    @Indexed
+    private String customerId;
 
-    @ManyToOne
-    @JoinColumn(name = "warehouse_id", referencedColumnName = "id")
-    private Warehouse warehouse;
+    @Indexed
+    private String warehouseId;
 
-    @Column(name = "distance")
     private double distance;
 }

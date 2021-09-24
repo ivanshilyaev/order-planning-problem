@@ -4,33 +4,29 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @Builder
-@Table(name = "orders")
+@Document
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(name = "customer_id")
-    private Long customerId;
+    private String customerId;
 
     @NotBlank(message = "Product name is mandatory")
-    @Column(name = "product_name")
     private String productName;
 
-    @ManyToOne
-    @JoinColumn(name = "warehouse_id", referencedColumnName = "id")
-    private Warehouse warehouse;
+    @Indexed
+    private String warehouseId;
 
-    @Column(name = "distance")
     private double distance;
 }

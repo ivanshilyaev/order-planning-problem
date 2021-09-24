@@ -37,8 +37,8 @@ public class OrderPlanningService {
                 }
                 page.forEach(warehouse -> {
                     CustomerWarehouseDistance entity = CustomerWarehouseDistance.builder()
-                            .customer(customer)
-                            .warehouse(warehouse)
+                            .customerId(customer)
+                            .warehouseId(warehouse)
                             .distance(distance(customer, warehouse))
                             .build();
                     service.saveOrUpdate(entity);
@@ -46,8 +46,8 @@ public class OrderPlanningService {
             }
         } else {
             entities.forEach(entity -> {
-                entity.setCustomer(customer);
-                Warehouse warehouse = warehouseRepository.findById(entity.getWarehouse().getId()).get();
+                entity.setCustomerId(customer);
+                Warehouse warehouse = warehouseRepository.findById(entity.getWarehouseId().getId()).get();
                 entity.setDistance(distance(customer, warehouse));
                 service.saveOrUpdate(entity);
             });
@@ -65,8 +65,8 @@ public class OrderPlanningService {
                 }
                 page.forEach(customer -> {
                     CustomerWarehouseDistance entity = CustomerWarehouseDistance.builder()
-                            .customer(customer)
-                            .warehouse(warehouse)
+                            .customerId(customer)
+                            .warehouseId(warehouse)
                             .distance(distance(customer, warehouse))
                             .build();
                     service.saveOrUpdate(entity);
@@ -74,8 +74,8 @@ public class OrderPlanningService {
             }
         } else {
             entities.forEach(entity -> {
-                entity.setWarehouse(warehouse);
-                Customer customer = customerRepository.findById(entity.getCustomer().getId()).get();
+                entity.setWarehouseId(warehouse);
+                Customer customer = customerRepository.findById(entity.getCustomerId().getId()).get();
                 entity.setDistance(distance(customer, warehouse));
                 service.saveOrUpdate(entity);
             });
@@ -92,7 +92,7 @@ public class OrderPlanningService {
             log.error(message);
             throw new NoWarehouseWithSuchProductException(message);
         });
-        order.setWarehouse(entity.getWarehouse());
+        order.setWarehouseId(entity.getWarehouseId());
         order.setDistance(entity.getDistance());
     }
 
