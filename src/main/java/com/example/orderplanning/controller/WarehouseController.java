@@ -55,8 +55,8 @@ public class WarehouseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<Warehouse>> updateWarehouse(@Valid @RequestBody Warehouse newWarehouse,
-                                                                  @PathVariable Long id
+    public ResponseEntity<EntityModel<Warehouse>> update(@Valid @RequestBody Warehouse newWarehouse,
+                                                         @PathVariable Long id
     ) {
         Warehouse updatedWarehouse = warehouseService.update(newWarehouse, id);
         EntityModel<Warehouse> entityModel = assembler.toModel(updatedWarehouse);

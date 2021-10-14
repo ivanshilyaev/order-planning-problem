@@ -19,8 +19,8 @@ public interface CustomerWarehouseDistanceRepository extends JpaRepository<Custo
 
     List<CustomerWarehouseDistance> findByWarehouse(Warehouse warehouse);
 
-    @Query(value = "select e from CustomerWarehouseDistance e join Product p on e.warehouse.id = p.warehouseId" +
-            " where e.customer = ?1 and p.name = ?2 order by e.distance")
+    @Query(value = "SELECT e FROM CustomerWarehouseDistance e JOIN Product p ON e.warehouse.id = p.warehouseId" +
+            " WHERE e.customer = ?1 AND p.name = ?2 ORDER BY e.distance")
     Page<CustomerWarehouseDistance> findByCustomerAndProductName(Customer customer, String productName,
                                                                  Pageable pageable);
 
@@ -28,11 +28,11 @@ public interface CustomerWarehouseDistanceRepository extends JpaRepository<Custo
 
     @Transactional
     @Modifying
-    @Query(value = "delete from CustomerWarehouseDistance where customer = ?1")
+    @Query(value = "DELETE FROM CustomerWarehouseDistance WHERE customer = ?1")
     void deleteByCustomer(Customer customer);
 
     @Transactional
     @Modifying
-    @Query(value = "delete from CustomerWarehouseDistance where warehouse = ?1")
+    @Query(value = "DELETE FROM CustomerWarehouseDistance WHERE warehouse = ?1")
     void deleteByWarehouse(Warehouse warehouse);
 }

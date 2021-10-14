@@ -38,8 +38,11 @@ public class OrderController {
                 linkTo(methodOn(OrderController.class).all(pageable)).withSelfRel()));
     }
 
-    // returns the nearest to the customer warehouse,
-    // containing the product, and distance to that warehouse
+    /**
+     * Finds the nearest to the customer warehouse, containing
+     * the product, calculates distance to that warehouse,
+     * and saves both distance and warehouse id in Order entity
+     */
     @PostMapping
     public ResponseEntity<EntityModel<Order>> newOrder(@Valid @RequestBody Order order) {
         orderService.save(order);

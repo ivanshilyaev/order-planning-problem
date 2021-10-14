@@ -55,8 +55,8 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EntityModel<Customer>> updateCustomer(@Valid @RequestBody Customer newCustomer,
-                                                                @PathVariable Long id
+    public ResponseEntity<EntityModel<Customer>> update(@Valid @RequestBody Customer newCustomer,
+                                                        @PathVariable Long id
     ) {
         Customer updatedCustomer = customerService.update(newCustomer, id);
         EntityModel<Customer> entityModel = assembler.toModel(updatedCustomer);
