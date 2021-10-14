@@ -3,44 +3,42 @@ package com.example.orderplanning.controller;
 import com.example.orderplanning.assembler.WarehouseModelAssembler;
 import com.example.orderplanning.entity.Warehouse;
 import com.example.orderplanning.service.WarehouseService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/warehouses")
 public class WarehouseController {
-    private final WarehouseService service;
+    private final WarehouseService warehouseService;
     private final WarehouseModelAssembler assembler;
+    private final PagedResourcesAssembler<Warehouse> pagedResourcesAssembler;
 
-    @Autowired
-    public WarehouseController(WarehouseService service, WarehouseModelAssembler assembler) {
-        this.service = service;
-        this.assembler = assembler;
+    @GetMapping
+    public ResponseEntity<CollectionModel<EntityModel<Warehouse>>> all(Pageable pageable) {
+        Page<Warehouse> page = warehouseService.findAll(pageable);
+        PagedModel<EntityModel<Warehouse>> model = pagedResourcesAssembler.toModel(page, assembler);
+
+        return ResponseEntity.ok(CollectionModel.of(model,
+                linkTo(methodOn(WarehouseController.class).all(pageable)).withSelfRel()));
     }
 
-    @GetMapping("/warehouses")
-    public ResponseEntity<CollectionModel<EntityModel<Warehouse>>> all() {
-        List<EntityModel<Warehouse>> warehouses = service.findAll()
-                .stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(CollectionModel.of(warehouses,
-                linkTo(methodOn(WarehouseController.class).all()).withSelfRel()));
-    }
-
-    @PostMapping("/warehouses")
-    public ResponseEntity<?> newWarehouse(@Valid @RequestBody Warehouse warehouse) {
-        service.saveOrUpdate(warehouse);
+    @PostMapping
+    public ResponseEntity<EntityModel<Warehouse>> newWarehouse(@Valid @RequestBody Warehouse warehouse) {
+        warehouseService.save(warehouse);
         EntityModel<Warehouse> entityModel = assembler.toModel(warehouse);
 
         return ResponseEntity
@@ -48,27 +46,19 @@ public class WarehouseController {
                 .body(entityModel);
     }
 
-    @GetMapping("/warehouses/{id}")
-    public ResponseEntity<EntityModel<Warehouse>> one(@PathVariable String id) {
-        return service.findById(id)
+    @GetMapping("/{id}")
+    public ResponseEntity<EntityModel<Warehouse>> one(@PathVariable Long id) {
+        return warehouseService.findById(id)
                 .map(assembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/warehouses/{id}")
-    public ResponseEntity<?> updateWarehouse(@Valid @RequestBody Warehouse newWarehouse, @PathVariable String id) {
-        Warehouse updatedWarehouse = service.findById(id)
-                .map(warehouse -> {
-                    warehouse.setX(newWarehouse.getX());
-                    warehouse.setY(newWarehouse.getY());
-                    service.saveOrUpdate(warehouse);
-                    return warehouse;
-                }).orElseGet(() -> {
-                    newWarehouse.setId(id);
-                    service.saveOrUpdate(newWarehouse);
-                    return newWarehouse;
-                });
+    @PutMapping("/{id}")
+    public ResponseEntity<EntityModel<Warehouse>> update(@Valid @RequestBody Warehouse newWarehouse,
+                                                         @PathVariable Long id
+    ) {
+        Warehouse updatedWarehouse = warehouseService.update(newWarehouse, id);
         EntityModel<Warehouse> entityModel = assembler.toModel(updatedWarehouse);
 
         return ResponseEntity
@@ -76,9 +66,9 @@ public class WarehouseController {
                 .body(entityModel);
     }
 
-    @DeleteMapping("/warehouses/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
-        service.deleteById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        warehouseService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }

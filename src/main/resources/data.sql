@@ -1,22 +1,22 @@
-INSERT INTO WAREHOUSES (id, x, y)
-VALUES ('Minsk', 50, 50),
-       ('Gomel', 100, 0),
-       ('Mogilev', 90, 55),
-       ('Vitebsk', 60, 100),
-       ('Grodno', 0, 45),
-       ('Brest', 0, 0);
+INSERT INTO WAREHOUSES (id, name, x, y)
+VALUES (1, 'Minsk', 50, 50),
+       (2, 'Gomel', 100, 0),
+       (3, 'Mogilev', 90, 55),
+       (4, 'Vitebsk', 60, 100),
+       (5, 'Grodno', 0, 45),
+       (6, 'Brest', 0, 0);
 
-INSERT INTO PRODUCTS (WAREHOUSE_ID, NAME)
-VALUES ('Minsk', 'iPhone'),
-       ('Minsk', 'MacBook'),
+INSERT INTO PRODUCTS (id, warehouse_id, name)
+VALUES (1, 1, 'iPhone'),
+       (2, 1, 'MacBook'),
 
-       ('Gomel', 'iPad'),
-       ('Gomel', 'iMac'),
+       (3, 2, 'iPad'),
+       (4, 2, 'iMac'),
 
-       ('Mogilev', 'AirPods'),
+       (5, 3, 'AirPods'),
 
-       ('Vitebsk', 'AirPods Pro'),
+       (6, 4, 'AirPods Pro'),
 
-       ('Grodno', 'Apple Watch'),
+       (7, 5, 'Apple Watch'),
 
-       ('Brest', 'AirPods Max');
+       (8, 6, 'AirPods Max');

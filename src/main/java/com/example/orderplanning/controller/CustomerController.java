@@ -3,43 +3,42 @@ package com.example.orderplanning.controller;
 import com.example.orderplanning.assembler.CustomerModelAssembler;
 import com.example.orderplanning.entity.Customer;
 import com.example.orderplanning.service.CustomerService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/customers")
 public class CustomerController {
-    private final CustomerService service;
+    private final CustomerService customerService;
     private final CustomerModelAssembler assembler;
+    private final PagedResourcesAssembler<Customer> pagedResourcesAssembler;
 
-    public CustomerController(CustomerService service, CustomerModelAssembler assembler) {
-        this.service = service;
-        this.assembler = assembler;
+    @GetMapping
+    public ResponseEntity<CollectionModel<EntityModel<Customer>>> all(Pageable pageable) {
+        Page<Customer> page = customerService.findAll(pageable);
+        PagedModel<EntityModel<Customer>> model = pagedResourcesAssembler.toModel(page, assembler);
+
+        return ResponseEntity.ok(CollectionModel.of(model,
+                linkTo(methodOn(CustomerController.class).all(pageable)).withSelfRel()));
     }
 
-    @GetMapping("/customers")
-    public ResponseEntity<CollectionModel<EntityModel<Customer>>> all() {
-        List<EntityModel<Customer>> customers = service.findAll()
-                .stream()
-                .map(assembler::toModel)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(CollectionModel.of(customers,
-                linkTo(methodOn(CustomerController.class).all()).withSelfRel()));
-    }
-
-    @PostMapping("/customers")
-    public ResponseEntity<?> newCustomer(@Valid @RequestBody Customer customer) {
-        service.saveOrUpdate(customer);
+    @PostMapping
+    public ResponseEntity<EntityModel<Customer>> newCustomer(@Valid @RequestBody Customer customer) {
+        customerService.save(customer);
         EntityModel<Customer> entityModel = assembler.toModel(customer);
 
         return ResponseEntity
@@ -47,27 +46,19 @@ public class CustomerController {
                 .body(entityModel);
     }
 
-    @GetMapping("/customers/{id}")
-    public ResponseEntity<EntityModel<Customer>> one(@PathVariable String id) {
-        return service.findById(id)
+    @GetMapping("/{id}")
+    public ResponseEntity<EntityModel<Customer>> one(@PathVariable Long id) {
+        return customerService.findById(id)
                 .map(assembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/customers/{id}")
-    public ResponseEntity<?> updateCustomer(@Valid @RequestBody Customer newCustomer, @PathVariable String id) {
-        Customer updatedCustomer = service.findById(id)
-                .map(customer -> {
-                    customer.setX(newCustomer.getX());
-                    customer.setY(newCustomer.getY());
-                    service.saveOrUpdate(customer);
-                    return customer;
-                }).orElseGet(() -> {
-                    newCustomer.setId(id);
-                    service.saveOrUpdate(newCustomer);
-                    return newCustomer;
-                });
+    @PutMapping("/{id}")
+    public ResponseEntity<EntityModel<Customer>> update(@Valid @RequestBody Customer newCustomer,
+                                                        @PathVariable Long id
+    ) {
+        Customer updatedCustomer = customerService.update(newCustomer, id);
         EntityModel<Customer> entityModel = assembler.toModel(updatedCustomer);
 
         return ResponseEntity
@@ -75,9 +66,9 @@ public class CustomerController {
                 .body(entityModel);
     }
 
-    @DeleteMapping("/customers/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
-        service.deleteById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        customerService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }

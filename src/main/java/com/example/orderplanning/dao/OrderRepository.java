@@ -1,12 +1,12 @@
 package com.example.orderplanning.dao;
 
 import com.example.orderplanning.entity.Order;
-import com.example.orderplanning.entity.OrderPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
-public interface OrderRepository extends JpaRepository<Order, OrderPK> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    Optional<Order> findByCustomerIdAndProductName(String customerId, String productName);
+    List<Order> findByCustomerIdAndProductName(Long customerId, String productName);
 }

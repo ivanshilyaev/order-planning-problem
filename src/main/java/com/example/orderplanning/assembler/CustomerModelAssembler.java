@@ -15,7 +15,6 @@ public class CustomerModelAssembler implements RepresentationModelAssembler<Cust
     public EntityModel<Customer> toModel(Customer customer) {
 
         return EntityModel.of(customer,
-                linkTo(methodOn(CustomerController.class).one(customer.getId())).withSelfRel(),
-                linkTo(methodOn(CustomerController.class).all()).withRel("customers"));
+                linkTo(methodOn(CustomerController.class).one(customer.getId())).withSelfRel());
     }
 }
